@@ -9,4 +9,7 @@ healthcheckTimeout = 300
 restartPolicyType = "on-failure"
 restartPolicyMaxRetries = 5
 
+[nixpacks]
+start-command = "gunicorn app:app"
+
 [environments]
