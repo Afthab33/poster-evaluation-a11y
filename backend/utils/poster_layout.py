@@ -1,5 +1,6 @@
 import cv2
 import spacy
+import torch  # Add this import
 from doclayout_yolo import YOLOv10
 import warnings
 import pytesseract
@@ -10,10 +11,13 @@ import math
 import os
 from .color_contrast_evaluation import ColorContrastEvaluator
 import google.generativeai as genai
+from utils.model_loader import get_model_paths
+import platform
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-genai.configure(api_key="AIzaSyBSIkpsua97dh-Rx1kBidtLMumpRoF3C1U")
+api_key = os.environ.get("GEMINI_API_KEY")
+genai.configure(api_key=api_key)
 model = genai.GenerativeModel("gemini-1.5-flash-latest")
 
 class LogoInfo:
@@ -62,15 +66,28 @@ class PosterComponentExtractor:
             'authors': 0
         }
 
-        self.base_model = YOLOv10(r"utils\Models\base.pt")
-        self.figure_model = YOLO(r'utils\Models\figure_classifier.pt')
-        self.logo_model = YOLO(r"utils\Models\logo_classifier.pt")
+        # Get model paths from model_loader
+        model_paths = get_model_paths()
+        
+        # Load models using the paths from model_loader
+        try:
+            # Use the downloaded model paths
+            self.base_model = YOLOv10(model_paths["base.pt"])
+            self.figure_model = YOLO(model_paths["figure_classifier.pt"])
+            self.logo_model = YOLO(model_paths["logo_classifier.pt"])
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            print(f"Error loading models: {str(e)}")
+            raise RuntimeError(f"Failed to load required models: {str(e)}")
 
         self.components = ['title', 'plain text', 'abandon', 'figure', 'figure_caption', 
                         'table', 'table_caption', 'table_footnote', 'isolate_formula', 'formula_caption']
         self.captions = ['table_caption', 'table_footnote', 'figure_caption']
 
-        pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+        # Platform-specific Tesseract path
+        if platform.system() == 'Windows':
+            pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
     def save_to_raw_components(self, component_type, x1, y1, x2, y2):
         self.component_counters[component_type] += 1
@@ -291,11 +308,12 @@ class PosterComponentExtractor:
         self.logo_annotated_image = self.original_image.copy()
         self.color_contrast_evaluator = ColorContrastEvaluator(self.original_image)
 
+        device = "cuda:0" if torch.cuda.is_available() else "cpu"
         result = self.base_model.predict(
             self.poster_path,
             imgsz=1024,
             conf=0.2,
-            device="cuda:0",
+            device=device,
             verbose=False
         )
 
@@ -351,4 +369,4 @@ class PosterComponentExtractor:
             
         return report
 
-    
+

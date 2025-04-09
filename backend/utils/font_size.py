@@ -1,8 +1,19 @@
 import cv2
 import pytesseract
 import os
+import platform
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+# Platform-specific Tesseract path
+def get_tesseract_path():
+    if platform.system() == 'Windows':
+        return r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    # On Mac/Linux, it's typically in the PATH
+    return None
+
+# Set tesseract path if needed
+tesseract_path = get_tesseract_path()
+if tesseract_path:
+    pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
 def calculate_font_size(image_path: str) -> dict:
     try:
@@ -33,6 +44,7 @@ def calculate_font_size(image_path: str) -> dict:
         }
         
     except Exception as e:
+        print(f"Error calculating font size: {str(e)}")
         return None
 
 def check_text_font_sizes(poster_path: str) -> dict:
