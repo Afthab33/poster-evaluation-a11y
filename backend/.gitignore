@@ -18,6 +18,8 @@ utils/Memory/
 utils/Output/
 utils/Buffer/
 utils/Models/*.pt
+utils/__pycache__/
+utils/.cache/
 
 # IDE
 .vscode/
@@ -29,4 +31,19 @@ utils/Models/*.pt
 # Environment
 .env
 *.log
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environment
+venv/
+ENV/
+
+# Render specific
+.render/
+
+# OS specific
+Thumbs.db
 
