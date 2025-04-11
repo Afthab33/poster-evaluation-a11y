@@ -1,8 +1,8 @@
 [phases.setup]
-nixPkgs = ["python310", "tesseract"]
+nixPkgs = ["python310", "tesseract", "pip"]
 
 [phases.install]
-cmds = ["pip install --upgrade pip", "pip install -r requirements.txt"]
+cmds = ["python3 -m pip install --upgrade pip", "pip install -r requirements.txt"]
 
 [start]
 cmd = "gunicorn app:app --bind=0.0.0.0:$PORT"
