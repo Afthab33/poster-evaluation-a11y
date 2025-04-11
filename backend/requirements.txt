@@ -1,8 +1,8 @@
 # Core web framework
 Flask>=2.0.1
 Flask-Cors>=3.0.10
-Werkzeug>=2.0.1
-gunicorn>=20.1.0
+Werkzeug>=2.0.1  # Required by Flask
+gunicorn>=20.1.0  # For production deployment
 
 # Image processing
 pillow>=10.0.0
@@ -11,37 +11,23 @@ pytesseract>=0.3.10
 
 # Data science and ML
 numpy>=1.24.3
-pandas>=2.0.3
 matplotlib>=3.7.2
-scipy>=1.10.1
-seaborn>=0.12.2
+scipy>=1.10.1  # Keeping as it's common in numerical processing
 
 # PyTorch ecosystem
 torch>=2.0.1
-torchvision>=0.15.2
 ultralytics>=8.0.145
-thop>=0.1.1.post2209072238
 
 # NLP and text processing
 spacy>=3.6.1
-pydantic>=2.0.3
-typer>=0.9.0
 
 # Google AI
 google-generativeai>=0.3.1
-google-api-core>=2.11.1
-google-auth>=2.22.0
 
 # API clients and utilities
 requests>=2.31.0
 huggingface-hub>=0.16.4
-tqdm>=4.66.1
 python-dotenv>=1.0.0
-PyYAML>=6.0.1
-
-# Image augmentation
-albumentations>=1.3.1
-albucore>=0.0.11
 
 # Project-specific
 doclayout_yolo==0.0.3  # keep this pinned if it's custom or has breaking changes
