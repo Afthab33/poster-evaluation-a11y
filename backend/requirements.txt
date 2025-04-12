@@ -19,7 +19,7 @@ python-dotenv>=1.0.0
 # Machine learning
 torch>=2.0.1
 torchvision>=0.15.2
-ultralytics==8.0.20
+ultralytics
 doclayout-yolo==0.0.3
 
 # Web framework
