@@ -8,10 +8,20 @@ from utils.image_resolution import evaluate_image_accessibility
 from utils.author_extraction import extract_authors
 from utils.caption_extractor import get_image_captions
 from utils.font_size import check_text_font_sizes
-
+from werkzeug.middleware.proxy_fix import ProxyFix
+import gc
 
 app = Flask(__name__)
+# Add ProxyFix middleware to handle forwarded headers
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 CORS(app)
+
+# Add this before your routes
+@app.before_request
+def handle_multipart():
+    if request.method == 'POST' and request.content_type and 'multipart/form-data' in request.content_type:
+        # No modification needed, but this intercepts the request before Railway middleware
+        pass
 
 # Create required directories
 def ensure_directories_exist():
@@ -71,7 +81,9 @@ def get_image(image_path):
             return jsonify({"error": "Image not found"}), 404
             
         # Return the image file
-        return send_file(file_path, mimetype='image/jpeg')
+        response = send_file(file_path, mimetype='image/jpeg')
+        response.headers['Cache-Control'] = 'public, max-age=300'  # Cache for 5 minutes
+        return response
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -84,18 +96,37 @@ def evaluate():
         # Clear directories before processing
         clear_directories()
         
-        # Check if poster file exists in request
-        if "poster" not in request.files:
-            return jsonify({"error": "No poster file provided"}), 400
-            
-        poster = request.files["poster"]
-        if poster.filename == '':
-            return jsonify({"error": "No selected file"}), 400
-            
-        # Save the file using platform-independent path
-        input_dir = os.path.join("utils", "Input")
-        file_path = os.path.join(input_dir, poster.filename)
-        poster.save(file_path)
+        # Special handling for Railway
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            poster_file = None
+            for key in request.files:
+                if key == 'poster' or 'poster' in key:
+                    poster_file = request.files[key]
+                    break
+                
+            if not poster_file:
+                return jsonify({"error": "No poster file found in request"}), 400
+                
+            if poster_file.filename == '':
+                return jsonify({"error": "No selected file"}), 400
+                
+            # Save the file
+            input_dir = os.path.join("utils", "Input")
+            file_path = os.path.join(input_dir, poster_file.filename)
+            poster_file.save(file_path)
+        else:
+            # Original handling
+            if "poster" not in request.files:
+                return jsonify({"error": "No poster file provided"}), 400
+                
+            poster = request.files["poster"]
+            if poster.filename == '':
+                return jsonify({"error": "No selected file"}), 400
+                
+            # Save the file
+            input_dir = os.path.join("utils", "Input")
+            file_path = os.path.join(input_dir, poster.filename)
+            poster.save(file_path)
         
         # Process the poster
         result = evaluatePoster(file_path)
@@ -118,6 +149,8 @@ def evaluate():
         font_sizes = check_text_font_sizes(file_path)
         result["font_sizes"] = font_sizes
         
+        gc.collect()  # Force garbage collection after processing
+        
         # Return the complete result
         return jsonify(result), 200
     except Exception as e:
@@ -125,10 +158,138 @@ def evaluate():
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
+@app.route("/evaluate-base64", methods=["POST"])
+def evaluate_base64():
+    try:
+        # Ensure directories exist
+        ensure_directories_exist()
+        
+        # Clear directories before processing
+        clear_directories()
+        
+        # Get base64 data from request
+        data = request.json
+        if not data or 'image' not in data:
+            return jsonify({"error": "No image data provided"}), 400
+            
+        # Decode base64 image
+        base64_data = data['image']
+        # Remove header if present
+        if 'base64,' in base64_data:
+            base64_data = base64_data.split('base64,')[1]
+            
+        image_data = base64.b64decode(base64_data)
+        
+        # Save to file
+        input_dir = os.path.join("utils", "Input")
+        file_path = os.path.join(input_dir, "uploaded_poster.png")
+        with open(file_path, 'wb') as f:
+            f.write(image_data)
+        
+        # Process the poster
+        result = evaluatePoster(file_path)
+        
+        # Add additional analyses
+        hyperlinks = evaluateLink(file_path)
+        if hyperlinks:
+            result["hyperlinks"] = hyperlinks
+            
+        authors = extract_authors(file_path)
+        if authors:
+            result["authors"] = authors
+            
+        resolution = evaluate_image_accessibility(file_path)
+        result["image_resolution"] = resolution
+
+        captions = get_image_captions(file_path)
+        result["captions"] = captions
+
+        font_sizes = check_text_font_sizes(file_path)
+        result["font_sizes"] = font_sizes
+        
+        gc.collect()  # Force garbage collection after processing
+        
+        return jsonify(result), 200
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/evaluate-graphql", methods=["POST"])
+def evaluate_graphql():
+    try:
+        # Check if the post request has the file part
+        if 'operations' not in request.form or 'map' not in request.form:
+            return jsonify({"error": "Missing GraphQL multipart fields"}), 400
+            
+        # For simplicity, just extract the file from the map
+        if '0' not in request.files:
+            return jsonify({"error": "No poster file provided"}), 400
+            
+        poster = request.files['0']
+        if poster.filename == '':
+            return jsonify({"error": "No selected file"}), 400
+            
+        # Save the file
+        input_dir = os.path.join("utils", "Input")
+        file_path = os.path.join(input_dir, poster.filename)
+        poster.save(file_path)
+        
+        # Process the poster as usual
+        result = evaluatePoster(file_path)
+        
+        # Add additional analyses
+        hyperlinks = evaluateLink(file_path)
+        if hyperlinks:
+            result["hyperlinks"] = hyperlinks
+            
+        authors = extract_authors(file_path)
+        if authors:
+            result["authors"] = authors
+            
+        resolution = evaluate_image_accessibility(file_path)
+        result["image_resolution"] = resolution
+
+        captions = get_image_captions(file_path)
+        result["captions"] = captions
+
+        font_sizes = check_text_font_sizes(file_path)
+        result["font_sizes"] = font_sizes
+        
+        gc.collect()  # Force garbage collection after processing
+        
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/health', methods=['GET'])
 def health_check():
     """Health check endpoint for Render"""
     return jsonify({"status": "healthy"}), 200
+
+@app.route("/debug-request", methods=["POST", "GET"])
+def debug_request():
+    if request.method == "GET":
+        return """
+        <html>
+        <body>
+            <h1>Debug Form</h1>
+            <form action="/debug-request" method="post" enctype="multipart/form-data">
+                <input type="file" name="file">
+                <button type="submit">Submit</button>
+            </form>
+        </body>
+        </html>
+        """
+    else:
+        data = {
+            "method": request.method,
+            "content_type": request.content_type,
+            "headers": dict(request.headers),
+            "files": list(request.files.keys()) if request.files else None,
+            "form": dict(request.form) if request.form else None
+        }
+        return jsonify(data)
 
 if __name__ == "__main__":
     # Ensure directories exist at startup
