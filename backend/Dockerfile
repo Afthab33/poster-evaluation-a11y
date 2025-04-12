@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     && pip install torch torchvision \
     && pip install ultralytics \
     && pip install doclayout-yolo==0.0.3 \
-    && pip install werkzeug==2.2.3 flask==2.0.1 flask-cors==3.0.10 \
+    && pip install werkzeug==2.2.3 flask==2.0.1 flask-cors==3.0.10 gunicorn \
     && python -m spacy download en_core_web_sm \
     && rm -rf /var/lib/apt/lists/*
 
@@ -28,5 +28,5 @@ RUN mkdir -p utils/Input utils/Memory/Raw\ Components utils/Output utils/Output/
 # Set environment variables
 ENV PORT=5006
 
-# Command to run the application
-CMD ["python", "app.py"]
+# Run with Gunicorn instead of Flask development server
+CMD ["gunicorn", "--bind", "0.0.0.0:5006", "app:app"]
