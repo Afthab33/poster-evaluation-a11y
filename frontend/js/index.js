@@ -99,16 +99,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     ...acc,
                     [key]: {
                         ...value,
-                        img: value.img ? `${API_BASE_URL}/${value.img}` : null
+                        img: value.img ? getImageUrl(value.img) : null
                     }
                 }), {}),
                 color_contrast: {
                     color_contrast_summary: result.color_contrast?.color_contrast_summary ? 
-                        `${API_BASE_URL}/${result.color_contrast.color_contrast_summary}` : "",
+                        getImageUrl(result.color_contrast.color_contrast_summary) : "",
                     sections: result.color_contrast?.sections.map(section => ({
                         ...section,
                         section_image: section.section_image ? 
-                            `${API_BASE_URL}/${section.section_image}` : null
+                            getImageUrl(section.section_image) : null
                     })) || []
                 },
                 hyperlinks: result.hyperlinks || {},
@@ -118,16 +118,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 logo_evaluation: {
                     logo_evaluation_summary: result.logo_evaluation?.logo_evaluation_summary ? 
-                        `${API_BASE_URL}/${result.logo_evaluation.logo_evaluation_summary}` : "",
-                    logos: result.logo_evaluation?.logos.map(logo => ({
-                        ...logo,
-                        logo_1: logo.logo_1 ? `${API_BASE_URL}/${logo.logo_1}` : null,
-                        logo_2: logo.logo_2 ? `${API_BASE_URL}/${logo.logo_2}` : null,
-                        logo_3: logo.logo_3 ? `${API_BASE_URL}/${logo.logo_3}` : null
-                    })) || []
+                        getImageUrl(result.logo_evaluation.logo_evaluation_summary) : "",
+                    logos: result.logo_evaluation?.logos.map(logo => {
+                        const newLogo = { ...logo };
+                        // Process each logo_X property
+                        Object.keys(logo).forEach(key => {
+                            if (key.startsWith('logo_') && logo[key]) {
+                                newLogo[key] = getImageUrl(logo[key]);
+                            }
+                        });
+                        return newLogo;
+                    }) || []
                 },
                 poster_layout: result.poster_layout ? 
-                    `${API_BASE_URL}/${result.poster_layout}` : "",
+                    getImageUrl(result.poster_layout) : "",
                     font_sizes: result.font_sizes || {}
             };
 
@@ -294,4 +298,17 @@ if (tableWidget) {
 
     }
 });
-  
+
+function getImageUrl(path) {
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://127.0.0.1:5000'
+        : 'https://poster-evaluation-a11y-production.up.railway.app';
+    
+    if (!path) return null;
+    
+    if (path.startsWith('get-image/')) {
+        return `${API_BASE_URL}/${path}`;
+    }
+    
+    return `${API_BASE_URL}/get-image/${path.replace(/^\//, '')}`;
+}

@@ -1,3 +1,18 @@
+// Add this at the top of the file
+function getImageUrl(path) {
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://127.0.0.1:5000'
+        : 'https://poster-evaluation-a11y-production.up.railway.app';
+    
+    if (!path) return null;
+    
+    if (path.startsWith('get-image/')) {
+        return `${API_BASE_URL}/${path}`;
+    }
+    
+    return `${API_BASE_URL}/get-image/${path.replace(/^\//, '')}`;
+}
+
 // Wait for DOM to be ready
 document.addEventListener('DOMContentLoaded', function() {
     const backToUpload = document.getElementById('backToUpload');
@@ -13,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!componentsImage) return;
 
         try {
-            const response = await fetch('https://poster-evaluation-a11y-production.up.railway.app/get-image/Output/extracted_components.png');
+            const response = await fetch(getImageUrl('Output/extracted_components.png'));
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }

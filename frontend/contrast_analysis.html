@@ -444,6 +444,20 @@
   </div>
 
   <script>
+    function getImageUrl(path) {
+      const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'http://127.0.0.1:5000'
+          : 'https://poster-evaluation-a11y-production.up.railway.app';
+      
+      if (!path) return null;
+      
+      if (path.startsWith('get-image/')) {
+          return `${API_BASE_URL}/${path}`;
+      }
+      
+      return `${API_BASE_URL}/get-image/${path.replace(/^\//, '')}`;
+    }
+
     let currentSectionIndex = 0;
     let sections = [];
 
@@ -512,7 +526,7 @@
       sectionImage.style.display = 'none';
       errorContainer.style.display = 'none';
       if (imagePath) {
-        sectionImage.src = imagePath;
+        sectionImage.src = getImageUrl(imagePath);
       } else {
         errorContainer.style.display = 'block';
         errorContainer.textContent = 'No image available for this section';
@@ -611,7 +625,7 @@
       const contrastImage = document.getElementById('contrastImage');
       const overviewImageError = document.getElementById('overviewImageError');
       if (analysisData.color_contrast.color_contrast_summary) {
-        contrastImage.src = analysisData.color_contrast.color_contrast_summary;
+        contrastImage.src = getImageUrl(analysisData.color_contrast.color_contrast_summary);
         contrastImage.style.display = 'block';
         overviewImageError.style.display = 'none';
         contrastImage.onerror = () => {

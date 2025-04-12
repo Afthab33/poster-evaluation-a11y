@@ -383,8 +383,7 @@
             
             if (data.logo_evaluation.logo_evaluation_summary) {
                 const imagePath = data.logo_evaluation.logo_evaluation_summary;
-                const cleanPath = imagePath.replace(/^http:\/\/127\.0\.0\.1:5000\//, '');
-                const overviewUrl = `https://poster-evaluation-a11y-production.up.railway.app/${cleanPath}`;
+                const overviewUrl = getImageUrl(imagePath);
                 console.log('Overview image path:', overviewUrl);
                 
                 fetch(overviewUrl)
@@ -431,8 +430,7 @@ overviewSection.insertBefore(logoImage, overviewSection.firstChild);
             const logoKey = Object.keys(currentLogo).find(key => key.startsWith('logo_'));
             if (logoKey && currentLogo[logoKey]) {
                 const imagePath = currentLogo[logoKey];
-                const cleanPath = imagePath.replace(/^http:\/\/127\.0\.0\.1:5000\//, '');
-                const fullUrl = `https://poster-evaluation-a11y-production.up.railway.app/${cleanPath}`;
+                const fullUrl = getImageUrl(imagePath);
                 console.log(`Attempting to load image from full URL: ${fullUrl}`);
                 
                 fetch(fullUrl)
@@ -523,4 +521,4 @@ overviewSection.insertBefore(logoImage, overviewSection.firstChild);
         });
     </script>
 </body>
-</html> 
+</html>
