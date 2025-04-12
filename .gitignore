@@ -1,1 +1,4 @@
 backend/requirements-freeze.txt
+venv/
+.venv/
+backend/venv/

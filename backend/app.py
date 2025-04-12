@@ -9,6 +9,7 @@ from utils.author_extraction import extract_authors
 from utils.caption_extractor import get_image_captions
 from utils.font_size import check_text_font_sizes
 
+
 app = Flask(__name__)
 CORS(app)
 
@@ -134,5 +135,5 @@ if __name__ == "__main__":
     ensure_directories_exist()
     
     # Use environment variables for port configuration
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5006))
     app.run(host="0.0.0.0", debug=False, port=port)

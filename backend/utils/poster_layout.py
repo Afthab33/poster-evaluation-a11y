@@ -1,6 +1,6 @@
 import cv2
 import spacy
-import torch  # Add this import
+import torch
 from doclayout_yolo import YOLOv10
 import warnings
 import pytesseract
