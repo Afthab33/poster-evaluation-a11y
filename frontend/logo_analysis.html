@@ -384,7 +384,7 @@
             if (data.logo_evaluation.logo_evaluation_summary) {
                 const imagePath = data.logo_evaluation.logo_evaluation_summary;
                 const cleanPath = imagePath.replace(/^http:\/\/127\.0\.0\.1:5000\//, '');
-                const overviewUrl = `http://127.0.0.1:5001/${cleanPath}`;
+                const overviewUrl = `http://poster-evaluation-a11y-production.up.railway.app/${cleanPath}`;
                 console.log('Overview image path:', overviewUrl);
                 
                 fetch(overviewUrl)
@@ -432,7 +432,7 @@ overviewSection.insertBefore(logoImage, overviewSection.firstChild);
             if (logoKey && currentLogo[logoKey]) {
                 const imagePath = currentLogo[logoKey];
                 const cleanPath = imagePath.replace(/^http:\/\/127\.0\.0\.1:5000\//, '');
-                const fullUrl = `http://127.0.0.1:5001/${cleanPath}`;
+                const fullUrl = `http://poster-evaluation-a11y-production.up.railway.app/${cleanPath}`;
                 console.log(`Attempting to load image from full URL: ${fullUrl}`);
                 
                 fetch(fullUrl)
