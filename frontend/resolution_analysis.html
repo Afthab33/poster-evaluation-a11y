@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resolution Analysis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-light: #4895ef;
+            --success-color: #2ec4b6;
+            --danger-color: #ef476f;
+            --warning-color: #ffd60a;
+            --text-primary: #2b2d42;
+            --text-secondary: #8d99ae;
+            --bg-light: #f8f9fa;
+            --bg-gradient: linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%);
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            --card-shadow-hover: 0 15px 30px rgba(67,97,238,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .back-button:hover {
+            background: var(--text-secondary);
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .metric-card {
+            background: var(--bg-light);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .metric-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .metric-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin: 20px 0;
+        }
+
+        .metric-description {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .threshold-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: var(--bg-light);
+            border-radius: 15px;
+        }
+
+        .threshold-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .threshold-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .threshold-icon {
+            color: var(--primary-color);
+            font-size: 1.2em;
+        }
+
+        .threshold-text {
+            flex: 1;
+        }
+
+        .threshold-value {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            .metric-value {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="analysis.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Back to Analysis
+        </a>
+
+        <h1>Resolution Analysis</h1>
+
+        <div class="metrics-grid" style="grid-template-columns: 1fr;">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </div>
+                    <h2 class="metric-title">Resolution</h2>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                    <div class="metric-value" id="resolutionValue">--</div>
+                    <div id="resolutionStatus" style="font-size: 2em;"></div>
+                </div>
+                <div class="metric-description">
+                    The resolution of your poster determines how clear and readable it will be when displayed or printed.
+                </div>
+            </div>
+        </div>
+
+        <div class="threshold-section">
+            <h3 class="threshold-title">Recommended Thresholds</h3>
+            
+          
+
+            
+
+            <div class="threshold-item">
+                <div class="threshold-icon">
+                    <i class="fas fa-image"></i>
+                </div>
+                <div class="threshold-text">
+                    <strong>Minimum Resolution:</strong> Recommended minimum resolution for web images.
+                </div>
+                <div class="threshold-value">800 × 600</div>
+            </div>
+
+            <div class="threshold-item">
+                <div class="threshold-icon">
+                    <i class="fas fa-desktop"></i>
+                </div>
+                <div class="threshold-text">
+                    <strong>HD Resolution:</strong> Standard high-definition resolution.
+                </div>
+                <div class="threshold-value">1920 × 1080</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const analysisDataString = sessionStorage.getItem('analysisData');
+            if (!analysisDataString) {
+                console.error('No analysis data found');
+                return;
+            }
+
+            try {
+                const data = JSON.parse(analysisDataString);
+                if (!data.image_resolution) {
+                    console.error('No resolution data found');
+                    return;
+                }
+
+                const resolution = data.image_resolution;
+                console.log('Resolution data:', resolution);
+                
+                // Update Resolution value
+                document.getElementById('resolutionValue').textContent = 
+                    resolution.Resolution ? `${resolution.Resolution}` : 'N/A';
+
+                // Add status indicators based on thresholds
+                const [width, height] = resolution.Resolution.split('x').map(Number);
+                const resolutionStatus = width >= 800 && height >= 600;
+
+                // Update the metric card with status indicator
+                const resolutionCard = document.getElementById('resolutionValue').parentElement.parentElement;
+                resolutionCard.style.borderLeft = `4px solid ${resolutionStatus ? 'var(--success-color)' : 'var(--danger-color)'}`;
+
+                // Add status icon (tick or cross)
+                const statusElement = document.getElementById('resolutionStatus');
+                if (resolutionStatus) {
+                    statusElement.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success-color);"></i>';
+                } else {
+                    statusElement.innerHTML = '<i class="fas fa-times-circle" style="color: var(--danger-color);"></i>';
+                }
+
+                // Add status text under the value
+                resolutionCard.querySelector('.metric-description').innerHTML += `
+                    <div style="margin-top: 15px; color: ${resolutionStatus ? 'var(--success-color)' : 'var(--danger-color)'}">
+                        Status: ${resolutionStatus ? 'Meets' : 'Below'} recommended threshold (800x600)
+                        ${!resolutionStatus ? `
+                            <div style="margin-top: 10px; color: var(--text-secondary); font-size: 0.9em;">
+                                Steps to improve resolution:
+                                <ul style="margin-top: 5px;">
+                                    <li>Use a higher resolution image</li>
+                                    <li>Ensure the image is not compressed</li>
+                                    <li>Export the poster at a higher resolution</li>
+                                </ul>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error processing analysis data:', error);
+            }
+        });
+    </script>
+</body>
+</html> 

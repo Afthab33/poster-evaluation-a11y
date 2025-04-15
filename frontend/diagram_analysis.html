@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagram Analysis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --success-color: #2ec4b6;
+            --danger-color: #ef476f;
+            --text-primary: #2b2d42;
+            --text-secondary: #8d99ae;
+            --bg-light: #f8f9fa;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7ff;
+            color: var(--text-primary);
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+        }
+
+        h1 {
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary-color), #4895ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .back-button:hover {
+            transform: translateX(-5px);
+            background: #4895ef;
+        }
+
+        .diagram-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .image-section {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .image-section img {
+            max-width: 100%;
+            max-height: 600px;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .caption-section {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .caption-header {
+            color: var(--text-primary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .caption-text {
+            color: var(--text-primary);
+            font-size: 1.1em;
+            line-height: 1.6;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .missing-caption {
+            color: var(--danger-color);
+            font-style: normal;
+            padding: 15px;
+            background: rgba(239, 71, 111, 0.1);
+            border-radius: 8px;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .missing-caption i {
+            margin-right: 8px;
+        }
+
+        .missing-caption ul {
+            padding-left: 25px;
+        }
+
+        .missing-caption li {
+            margin: 5px 0;
+        }
+
+        .section-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .nav-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-button:hover {
+            background: #4895ef;
+        }
+
+        .nav-button:disabled {
+            background: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .toggle-button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-light);
+            color: var(--text-secondary);
+        }
+
+        .toggle-button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .toggle-button:hover:not(.active) {
+            background: #e9ecef;
+        }
+
+        .view-section {
+            display: none;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        .overview-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+
+        .overview-table th,
+        .overview-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .overview-table th {
+            background: var(--bg-light);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .overview-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .overview-table tr:hover {
+            background: var(--bg-light);
+            cursor: pointer;
+        }
+
+        .caption-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .caption-status.has-caption {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .caption-status.no-caption {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .overview-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            color: var(--text-primary);
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .overview-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .overview-table {
+                font-size: 0.9em;
+            }
+
+            .caption-status {
+                padding: 4px 8px;
+                font-size: 0.8em;
+            }
+        }
+
+        .details-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            width: auto;
+            box-sizing: border-box;
+        }
+
+        .image-container,
+        .caption-container {
+            background: var(--bg-light);
+            padding: 25px;
+            border-radius: 10px;
+            min-height: 500px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            margin: 0;
+            width: 100%;
+        }
+
+        .image-container {
+            align-items: center;
+            justify-content: center;
+        }
+
+        .caption-container {
+            overflow-y: auto;
+        }
+
+        #diagramImage {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            max-height: 400px;
+        }
+
+        @media (max-width: 992px) {
+            .details-container {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .image-container, .caption-container {
+                height: auto;
+                min-height: 400px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="analysis.html" class="back-button">← Back to Analysis</a>
+        <h1>Diagram Analysis</h1>
+
+        <div class="view-toggle">
+            <button class="toggle-button active" data-view="overview">Overview</button>
+            <button class="toggle-button" data-view="depth">In-Depth Analysis</button>
+        </div>
+
+        <div class="view-section overview-section active" id="overviewSection">
+            <div class="overview-stats">
+                <div class="stat-card">
+                    <div class="stat-label">Total Diagrams</div>
+                    <div class="stat-value" id="totalDiagrams">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">With Captions</div>
+                    <div class="stat-value" id="captionedDiagrams">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Missing Captions</div>
+                    <div class="stat-value" id="uncaptionedDiagrams">0</div>
+                </div>
+            </div>
+
+            <table class="overview-table">
+                <thead>
+                    <tr>
+                        <th>Diagram</th>
+                        <th>Caption Status</th>
+                        <th>Caption Preview</th>
+                    </tr>
+                </thead>
+                <tbody id="diagramTableBody">
+                    <!-- Populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="view-section details-section" id="depthSection">
+            <div class="details-container">
+                <div class="image-container">
+                    <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--text-primary);">Diagram <span class="diagram-number"></span></h3>
+                    <img id="diagramImage" alt="Diagram visualization" />
+                </div>
+                
+                <div class="caption-container">
+                    <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--text-primary);">Diagram <span class="diagram-number-caption"></span></h3>
+                    <div class="caption-text" id="captionText"></div>
+                </div>
+            </div>
+
+            <div class="section-navigation">
+                <button class="nav-button" onclick="navigateDiagram(-1)" id="prevButton">
+                    ← Previous Diagram
+                </button>
+                <span id="diagramCounter">Diagram 1 of 1</span>
+                <button class="nav-button" onclick="navigateDiagram(1)" id="nextButton">
+                    Next Diagram →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDiagramIndex = 0;
+        let diagrams = [];
+
+        document.querySelectorAll('.toggle-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const targetView = button.dataset.view;
+                
+                document.querySelectorAll('.toggle-button').forEach(btn => {
+                    btn.classList.toggle('active', btn === button);
+                });
+
+                document.querySelectorAll('.view-section').forEach(section => {
+                    section.classList.toggle('active', 
+                        (section.classList.contains('overview-section') && targetView === 'overview') ||
+                        (section.classList.contains('details-section') && targetView === 'depth')
+                    );
+                });
+            });
+        });
+
+        function isValidCaption(caption) {
+            if (!caption) return false;
+            const trimmedCaption = caption.trim();
+            return trimmedCaption !== '' && 
+                   trimmedCaption !== 'No caption provided' &&
+                   trimmedCaption !== '""' &&
+                   trimmedCaption !== '"' &&
+                   trimmedCaption !== '[]' &&
+                   trimmedCaption !== '{}';
+        }
+
+        function updateOverviewTable() {
+            const tableBody = document.getElementById('diagramTableBody');
+            const withCaptions = diagrams.filter(d => isValidCaption(d.captionText)).length;
+            
+            document.getElementById('totalDiagrams').textContent = diagrams.length;
+            document.getElementById('captionedDiagrams').textContent = withCaptions;
+            document.getElementById('uncaptionedDiagrams').textContent = diagrams.length - withCaptions;
+
+            tableBody.innerHTML = diagrams.map((diagram, index) => {
+                const hasCaption = isValidCaption(diagram.captionText);
+                const captionPreview = hasCaption 
+                    ? diagram.captionText.substring(0, 100) + (diagram.captionText.length > 100 ? '...' : '')
+                    : 'No caption provided';
+                
+                return `
+                    <tr onclick="showDiagramDetails(${index})">
+                        <td>${diagram.key}</td>
+                        <td>
+                            <span class="status-badge ${hasCaption ? 'success' : 'error'}" style="
+                                display: inline-flex;
+                                align-items: center;
+                                padding: 6px 12px;
+                                border-radius: 20px;
+                                font-size: 0.9em;
+                                font-weight: 500;
+                                background-color: ${hasCaption ? 'rgba(46, 196, 182, 0.1)' : 'rgba(239, 71, 111, 0.1)'};
+                                color: ${hasCaption ? '#2ec4b6' : '#ef476f'};
+                            ">
+                                <i class="fas fa-${hasCaption ? 'check' : 'times'}-circle" style="margin-right: 6px;"></i>
+                                ${hasCaption ? 'Has Caption' : 'No Caption'}
+                            </span>
+                        </td>
+                        <td>${captionPreview}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function showDiagramDetails(index) {
+            currentDiagramIndex = index;
+            document.querySelector('[data-view="depth"]').click();
+            updateDiagramView();
+        }
+
+        function navigateDiagram(direction) {
+            const newIndex = currentDiagramIndex + direction;
+            
+            if (newIndex >= 0 && newIndex < diagrams.length) {
+                currentDiagramIndex = newIndex;
+                updateDiagramView();
+                
+                const buttonId = direction === -1 ? 'prevButton' : 'nextButton';
+                const button = document.getElementById(buttonId);
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    button.style.transform = 'scale(1)';
+                }, 100);
+            }
+        }
+
+        function handleKeyNavigation(e) {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                const direction = e.key === 'ArrowLeft' ? -1 : 1;
+                navigateDiagram(direction);
+            }
+        }
+
+        function updateDiagramView() {
+            const diagram = diagrams[currentDiagramIndex];
+            if (!diagram) return;
+
+            const diagramNumber = currentDiagramIndex + 1;
+            document.querySelector('.diagram-number').textContent = diagramNumber;
+            document.querySelector('.diagram-number-caption').textContent = diagramNumber;
+
+            document.getElementById('diagramCounter').textContent = 
+                `${diagram.key} (${diagramNumber} of ${diagrams.length})`;
+
+            const diagramImage = document.getElementById('diagramImage');
+            const captionText = document.getElementById('captionText');
+
+            if (diagram.image_path) {
+                diagramImage.src = diagram.image_path;
+                diagramImage.style.display = 'block';
+            } else {
+                diagramImage.style.display = 'none';
+                captionText.innerHTML = `
+                    <div class="missing-image">
+                        <i class="fas fa-exclamation-circle"></i>
+                        No image available for this diagram
+                    </div>
+                `;
+            }
+
+            const hasCaption = isValidCaption(diagram.captionText);
+            if (hasCaption) {
+                captionText.innerHTML = `
+                    <div class="caption-content">
+                        <p><strong>Caption Status:</strong> 
+                            <span class="status-badge success">
+                                <i class="fas fa-check-circle"></i>
+                                Has Caption
+                            </span>
+                        </p>
+                        <p><strong>Caption:</strong></p>
+                        <div class="caption-text">
+                            ${diagram.captionText}
+                        </div>
+                    </div>
+                `;
+            } else {
+                captionText.innerHTML = `
+                    <div class="missing-caption">
+                        <p><strong>Caption Status:</strong> 
+                            <span class="status-badge error">
+                                <i class="fas fa-times-circle"></i>
+                                No Caption
+                            </span>
+                        </p>
+                        <div class="accessibility-info">
+                            <h4 style="color: #ef476f;">Missing Caption: Accessibility Impact</h4>
+                            <ul style="margin-bottom: 20px;">
+                                <li>Screen readers cannot convey the diagram's content</li>
+                                <li>Users may miss important information</li>
+                                <li>Reduces understanding of the visualization</li>
+                            </ul>
+
+                            <h4 style="color: var(--primary-color);">Recommendations:</h4>
+                            <ul>
+                                <li>Add a clear, descriptive caption</li>
+                                <li>Explain key elements and relationships</li>
+                                <li>Include relevant measurements or trends</li>
+                                <li>Provide context for the visualization</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('prevButton').disabled = currentDiagramIndex === 0;
+            document.getElementById('nextButton').disabled = currentDiagramIndex === diagrams.length - 1;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const analysisDataStr = sessionStorage.getItem('analysisData');
+            if (!analysisDataStr) {
+                document.getElementById('overviewSection').innerHTML = `
+                    <div style="color: var(--danger-color); padding: 20px; text-align: center; background: white; border-radius: 12px; box-shadow: var(--card-shadow);">
+                        <i class="fas fa-exclamation-circle" style="font-size: 2em; margin-bottom: 15px;"></i>
+                        <h2 style="margin: 10px 0;">No Analysis Data Found</h2>
+                        <p style="color: var(--text-secondary);">Please analyze a poster first.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const analysisData = JSON.parse(analysisDataStr);
+                if (!analysisData.captions) {
+                    document.getElementById('overviewSection').innerHTML = `
+                        <div style="color: var(--danger-color); padding: 20px; text-align: center; background: white; border-radius: 12px; box-shadow: var(--card-shadow);">
+                            <i class="fas fa-exclamation-circle" style="font-size: 2em; margin-bottom: 15px;"></i>
+                            <h2 style="margin: 10px 0;">No Diagram Data Found</h2>
+                            <p style="color: var(--text-secondary);">No diagram data found in the analysis results.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                for (const [key, caption] of Object.entries(analysisData.captions)) {
+                    if (!caption || caption === '{}') continue;
+
+                    const imagePath = caption.img;
+                    const captionText = caption.caption;
+                    
+                    if (imagePath) {
+                        diagrams.push({
+                            key: key,
+                            image_path: imagePath,
+                            captionText: captionText
+                        });
+                    }
+                }
+
+                if (diagrams.length === 0) {
+                    document.getElementById('overviewSection').innerHTML = `
+                        <div style="color: var(--danger-color); padding: 20px; text-align: center; background: white; border-radius: 12px; box-shadow: var(--card-shadow);">
+                            <i class="fas fa-exclamation-circle" style="font-size: 2em; margin-bottom: 15px;"></i>
+                            <h2 style="margin: 10px 0;">No Diagrams Found</h2>
+                            <p style="color: var(--text-secondary);">No diagrams were found in the document.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                updateOverviewTable();
+                updateDiagramView();
+                
+                document.addEventListener('keydown', handleKeyNavigation);
+
+            } catch (error) {
+                document.getElementById('overviewSection').innerHTML = `
+                    <div style="color: var(--danger-color); padding: 20px; text-align: center; background: white; border-radius: 12px; box-shadow: var(--card-shadow);">
+                        <i class="fas fa-exclamation-circle" style="font-size: 2em; margin-bottom: 15px;"></i>
+                        <h2 style="margin: 10px 0;">Error Processing Data</h2>
+                        <p style="color: var(--text-secondary);">Error parsing analysis data. Please try analyzing the poster again.</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html> 
