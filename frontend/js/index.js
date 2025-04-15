@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData();
             formData.append('poster', currentFile);
 
-            const API_BASE_URL = 'http://poster-evaluation-a11y-production.up.railway.app';
+            const API_BASE_URL = 'https://poster-evaluation-a11y-production.up.railway.app';
 
             const response = await fetch(`${API_BASE_URL}/evaluate`, {
                 method: 'POST',
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         return;
                     }
                 
-                    const API_BASE_URL = 'http://poster-evaluation-a11y-production.up.railway.app';
+                    const API_BASE_URL = 'https://poster-evaluation-a11y-production.up.railway.app';
                     const contrastSummary = {
                         "annotated_image": analysisData.color_contrast.color_contrast_summary ? 
                             `${API_BASE_URL}/${analysisData.color_contrast.color_contrast_summary}` : "",

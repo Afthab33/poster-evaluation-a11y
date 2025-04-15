@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!componentsImage) return;
 
         try {
-            const response = await fetch('http://poster-evaluation-a11y-production.up.railway.app/get-image/Output/extracted_components.png');
+            const response = await fetch('https://poster-evaluation-a11y-production.up.railway.app/get-image/Output/extracted_components.png');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const contrastHtml = sections.map(section => {
                 console.log('2. Processing section:', section);
-                const imageUrl = `http://poster-evaluation-a11y-production.up.railway.app/${section.section_image}`;
+                const imageUrl = `https://poster-evaluation-a11y-production.up.railway.app/${section.section_image}`;
                 const isFailed = section.accessibility === "FAIL";
                 console.log('3. Section failed?', isFailed);
                 
@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="caption-item">
                     <h4>${key}</h4>
                     <p>${value.caption}</p>
-                    <img src="http://poster-evaluation-a11y-production.up.railway.app/get-image/${value.img}" alt="${value.caption}" />
+                    <img src="https://poster-evaluation-a11y-production.up.railway.app/get-image/${value.img}" alt="${value.caption}" />
                 </div>
             `).join('');
             captionsContainer.innerHTML = captionsHtml;
