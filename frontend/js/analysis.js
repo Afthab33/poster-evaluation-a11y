@@ -20,14 +20,30 @@ document.addEventListener('DOMContentLoaded', function() {
             const blob = await response.blob();
             const imageUrl = URL.createObjectURL(blob);
             componentsImage.src = imageUrl;
+            componentsImage.setAttribute('aria-label', 'Visual breakdown of poster components showing all detected elements');
             
-            componentsImage.onload = () => {};
+            componentsImage.onload = () => {
+                // Announce to screen readers that the image is loaded
+                const statusElement = document.createElement('div');
+                statusElement.setAttribute('role', 'status');
+                statusElement.setAttribute('aria-live', 'polite');
+                statusElement.classList.add('sr-only');
+                statusElement.textContent = 'Components image loaded successfully';
+                document.body.appendChild(statusElement);
+                
+                setTimeout(() => {
+                    document.body.removeChild(statusElement);
+                }, 1000);
+            };
             
             componentsImage.onerror = () => {
                 componentsImage.alt = 'Failed to load components analysis';
+                componentsImage.setAttribute('aria-label', 'Failed to load components analysis image');
             };
         } catch (error) {
             componentsImage.alt = 'Error loading components analysis';
+            componentsImage.setAttribute('aria-label', 'Error loading components analysis image');
+            console.error('Error fetching components image:', error);
         }
     }
 
@@ -39,6 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const analysisData = JSON.parse(analysisDataString);
+        console.log('Analysis data loaded:', analysisData);
 
         const fileName = document.getElementById('fileName');
         const originalFileName = sessionStorage.getItem('originalFileName');
@@ -56,6 +73,86 @@ document.addEventListener('DOMContentLoaded', function() {
 
         await fetchComponentsImage();
         await updateMetrics(analysisData);
+        await updateSummarySection(analysisData);
+    }
+
+    // New function to update the summary section
+    async function updateSummarySection(analysisData) {
+        // Update Color Contrast Summary
+        const contrastSummary = document.getElementById('contrastSummary');
+        if (contrastSummary && analysisData.color_contrast && analysisData.color_contrast.sections) {
+            const sections = analysisData.color_contrast.sections;
+            const passCount = sections.filter(s => s.accessibility === "PASS").length;
+            const totalCount = sections.length;
+            const passPercentage = Math.round((passCount / totalCount) * 100);
+            
+            let statusClass = passPercentage >= 70 ? 'success' : passPercentage >= 50 ? 'warning' : 'error';
+            
+            contrastSummary.innerHTML = `
+                <span class="status-badge ${statusClass}">
+                    <i class="fas fa-${passPercentage >= 70 ? 'check' : passPercentage >= 50 ? 'exclamation' : 'times'}-circle"></i>
+                    ${passPercentage}% Pass
+                </span>
+            `;
+        }
+        
+        // Update Font Size Summary
+        const fontSummary = document.getElementById('fontSummary');
+        if (fontSummary && analysisData.font_sizes) {
+            const MIN_ACCESSIBLE_FONT = 14.0;
+            let totalFonts = 0;
+            let accessibleFonts = 0;
+
+            Object.values(analysisData.font_sizes).forEach(font => {
+                totalFonts++;
+                if (font.font_size >= MIN_ACCESSIBLE_FONT) {
+                    accessibleFonts++;
+                }
+            });
+
+            const score = totalFonts > 0 ? Math.round((accessibleFonts / totalFonts) * 100) : 0;
+            let statusClass = score >= 75 ? 'success' : score >= 50 ? 'warning' : 'error';
+            
+            fontSummary.innerHTML = `
+                <span class="status-badge ${statusClass}">
+                    <i class="fas fa-${score >= 75 ? 'check' : score >= 50 ? 'exclamation' : 'times'}-circle"></i>
+                    ${score}% Readable
+                </span>
+            `;
+        }
+        
+        // Update Logo Accessibility Summary
+        const logoSummary = document.getElementById('logoSummary');
+        if (logoSummary && analysisData.logo_evaluation && analysisData.logo_evaluation.logos) {
+            const logos = analysisData.logo_evaluation.logos;
+            const simpleLogos = logos.filter(logo => logo.label === "Simple");
+            const percentage = logos.length > 0 ? Math.round((simpleLogos.length / logos.length) * 100) : 0;
+            
+            let statusClass = percentage >= 70 ? 'success' : percentage >= 50 ? 'warning' : 'error';
+            
+            logoSummary.innerHTML = `
+                <span class="status-badge ${statusClass}">
+                    <i class="fas fa-${percentage >= 70 ? 'check' : percentage >= 50 ? 'exclamation' : 'times'}-circle"></i>
+                    ${percentage}% Simple
+                </span>
+            `;
+        }
+        
+        // Update Resolution Summary
+        const resolutionSummary = document.getElementById('resolutionSummary');
+        if (resolutionSummary && analysisData.image_resolution) {
+            const dpi = analysisData.image_resolution.DPI || 0;
+            const isAccessible = dpi >= 300;
+            
+            let statusClass = isAccessible ? 'success' : 'error';
+            
+            resolutionSummary.innerHTML = `
+                <span class="status-badge ${statusClass}">
+                    <i class="fas fa-${isAccessible ? 'check' : 'times'}-circle"></i>
+                    ${dpi} DPI
+                </span>
+            `;
+        }
     }
 
     // Function to update all metrics
@@ -83,12 +180,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831"
                                 fill="none"
-                                stroke="${passPercentage >= 70 ? '#2ec4b6' : '#ef476f'}"
+                                stroke="${passPercentage >= 70 ? '#2ec4b6' : passPercentage >= 50 ? '#ff9f1c' : '#ef476f'}"
                                 stroke-width="2"
                                 stroke-dasharray="${passPercentage}, 100"
                                 style="transform: rotate(-90deg); transform-origin: center;"
                             />
-                            <text x="18" y="20.35" text-anchor="middle" fill="${passPercentage >= 70 ? '#2ec4b6' : '#ef476f'}" style="font-size: 8px; font-weight: bold;">
+                            <text x="18" y="20.35" text-anchor="middle" fill="${passPercentage >= 70 ? '#2ec4b6' : passPercentage >= 50 ? '#ff9f1c' : '#ef476f'}" style="font-size: 8px; font-weight: bold;">
                                 ${passPercentage}%
                             </text>
                         </svg>
@@ -100,6 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         }
 
+        // Update contrastMetrics if it exists on this page
         const contrastMetrics = document.getElementById('contrastMetrics');
         if (contrastMetrics && analysisData.color_contrast && analysisData.color_contrast.sections) {
             const sections = analysisData.color_contrast.sections;
@@ -196,20 +294,31 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('=== End Contrast Analysis Debug Error ===');
         }
 
-        const imageMetrics = document.getElementById('imageMetrics');
-        if (imageMetrics && analysisData.image_accessibility) {
-            const imgAccessibility = analysisData.image_accessibility;
-            imageMetrics.innerHTML = `
-                <ul>
-                    <li>DPI: ${imgAccessibility.dpi}</li>
-                    <li>Resolution: ${imgAccessibility.width} x ${imgAccessibility.height}</li>
-                    <li>Status: ${imgAccessibility.is_accessible ? 'Accessible' : 'Not Accessible'}</li>
-                </ul>
+        // Update resolution details
+        const resolutionDetails = document.getElementById('resolutionDetails');
+        if (resolutionDetails && analysisData.image_resolution) {
+            const resolution = analysisData.image_resolution;
+            const dpi = resolution.DPI || 0;
+            const [width, height] = resolution.Resolution ? resolution.Resolution.toString().split('x').map(Number) : [0, 0];
+            const isAccessible = dpi >= 300;
+
+            resolutionDetails.innerHTML = `
+                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
+                    <div style="width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;">
+                        <div style="font-size: 5em; color: var(--${isAccessible ? 'success' : 'danger'}-color);">
+                            <i class="fas fa-${isAccessible ? 'check' : 'times'}-circle"></i>
+                        </div>
+                    </div>
+                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
+                        ${dpi} DPI (${isAccessible ? 'Meets' : 'Below'} recommended 300 DPI)
+                    </div>
+                </div>
             `;
         }
 
-        const linkMetrics = document.getElementById('hyperlinksDetails');
-        if (linkMetrics) {
+        // Update hyperlinks details
+        const hyperlinksDetails = document.getElementById('hyperlinksDetails');
+        if (hyperlinksDetails) {
             console.log('=== Hyperlinks Debug Info ===');
             console.log('1. Analysis Data:', analysisData);
             
@@ -224,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (totalLinks > 0) {
                 console.log('3. Condition met: totalLinks > 0');
-                linkMetrics.innerHTML = `
+                hyperlinksDetails.innerHTML = `
                     <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
                         <div style="width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;">
                             <div style="font-size: 5em; color: var(--success-color);">
@@ -238,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             } else {
                 console.log('3. Condition not met: totalLinks <= 0');
-                linkMetrics.innerHTML = `
+                hyperlinksDetails.innerHTML = `
                     <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
                         <div style="width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;">
                             <div style="font-size: 5em; color: var(--danger-color);">
@@ -254,107 +363,24 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('=== End Hyperlinks Debug Info ===');
         }
 
-        const componentMetrics = document.getElementById('componentMetrics');
-        if (componentMetrics && analysisData.poster_components) {
-            const components = analysisData.poster_components;
-            componentMetrics.innerHTML = `
-                <ul>
-                    <li>Authors: ${components.Authors.join(', ')}</li>
-                    <li>Captions: ${components["Caption Count"]}</li>
-                    <li>Complex Logos: ${components["Complex Logo Count"]}</li>
-                    <li>Simple Logos: ${components["Simple Logo Count"]}</li>
-                    <li>Diagrams: ${components["Diagram Count"]}</li>
-                    <li>Figures: ${components["Figure Count"]}</li>
-                </ul>
-            `;
-        }
-
-        const captionsContainer = document.getElementById('captionsContainer');
-        if (captionsContainer && analysisData.captions) {
-            const captionsHtml = Object.entries(analysisData.captions).map(([key, value]) => `
-                <div class="caption-item">
-                    <h4>${key}</h4>
-                    <p>${value.caption}</p>
-                    <img src="https://poster-evaluation-a11y-production.up.railway.app/get-image/${value.img}" alt="${value.caption}" />
-                </div>
-            `).join('');
-            captionsContainer.innerHTML = captionsHtml;
-        }
-
-        // Update resolution card
-        const resolutionCard = document.querySelector('.metric-card[onclick*="resolution_analysis.html"]');
-        if (resolutionCard && analysisData.image_resolution) {
-            const resolution = analysisData.image_resolution;
-            const [width, height] = resolution.Resolution.split('x').map(Number);
-            const resolutionStatus = width >= 800 && height >= 600;
-
-            resolutionCard.innerHTML = `
-                <div class="metric-title">
-                    <i class="fas fa-expand-arrows-alt"></i>
-                    <span>Resolution</span>
-                </div>
-                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
-                    <div style="width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;">
-                        <div style="font-size: 5em; color: var(--${resolutionStatus ? 'success' : 'danger'}-color);">
-                            <i class="fas fa-${resolutionStatus ? 'check' : 'times'}-circle"></i>
-                        </div>
-                    </div>
-                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
-                        ${resolutionStatus ? 'Meets minimum requirements' : 'Below recommended resolution'}
-                    </div>
-                </div>
-            `;
-        }
-
-        // Update authors card
-        const authorsCard = document.querySelector('.metric-card[onclick*="authors_analysis.html"]');
-        if (authorsCard) {
-            const hasAuthors = analysisData.authors && 
-                             Array.isArray(analysisData.authors) &&
-                             analysisData.authors.length > 0;
-
-            authorsCard.innerHTML = `
-                <div class="metric-title">
-                    <i class="fas fa-users"></i>
-                    <span>Authors</span>
-                </div>
-                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
-                    <div style="width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;">
-                        <div style="font-size: 5em; color: var(--${hasAuthors ? 'success' : 'danger'}-color);">
-                            <i class="fas fa-${hasAuthors ? 'check' : 'times'}-circle"></i>
-                        </div>
-                    </div>
-                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
-                        ${hasAuthors ? `${analysisData.authors.length} author(s) present` : 'No authors found'}
-                    </div>
-                </div>
-            `;
-        }
-
-        // Update diagram card
-        const diagramCard = document.getElementById('diagramCard');
-        if (diagramCard && analysisData.captions) {
+        // Update diagram details
+        const diagramDetails = document.getElementById('diagramDetails');
+        if (diagramDetails && analysisData.captions) {
             const diagramCaptions = Object.entries(analysisData.captions)
-                .filter(([key]) => key.startsWith('diagram_') || key.startsWith('bar_graphs_') || key.startsWith('pie_chart_'))
-                .map(([key, value]) => ({
-                    id: key,
-                    hasValidCaption: value.caption && value.caption.trim() !== '' && 
-                                   value.caption !== "No caption provided" && 
-                                   value.caption !== '""' && 
-                                   value.caption !== '"'
-                }));
+                .filter(([key]) => key.startsWith('diagram_') || key.startsWith('bar_graphs_') || key.startsWith('pie_chart_'));
             
             const totalDiagrams = diagramCaptions.length;
-            const diagramsWithCaptions = diagramCaptions.filter(d => d.hasValidCaption).length;
+            const diagramsWithCaptions = diagramCaptions.filter(([_, val]) => 
+                val.caption && 
+                val.caption.trim() !== '' && 
+                val.caption !== "No caption provided" && 
+                val.caption !== '""' && 
+                val.caption !== '"').length;
             
             const score = totalDiagrams > 0 ? 
                 Math.round((diagramsWithCaptions / totalDiagrams) * 100) : 0;
             
-            diagramCard.innerHTML = `
-                <div class="metric-title">
-                    <i class="fas fa-diagram-project"></i>
-                    <span>Diagram</span>
-                </div>
+            diagramDetails.innerHTML = `
                 <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
                     <div style="width: 200px; height: 200px;">
                         <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
@@ -384,29 +410,128 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             `;
-
-            diagramCard.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (!analysisData.captions) {
-                    sessionStorage.setItem('diagramData', JSON.stringify([]));
-                } else {
-                    const diagramData = Object.entries(analysisData.captions)
-                        .filter(([key]) => key.startsWith('diagram_') || key.startsWith('bar_graphs_') || key.startsWith('pie_chart_'))
-                        .map(([key, val]) => ({ 
-                            id: key, 
-                            ...val,
-                            hasCaption: val.caption && val.caption.trim() !== '' && 
-                                       val.caption !== "No caption provided" &&
-                                       val.caption !== '""' &&
-                                       val.caption !== '"'
-                        }));
-                    sessionStorage.setItem('diagramData', JSON.stringify(diagramData));
-                }
-                window.location.href = 'diagram_analysis.html';
-            });
         }
 
-        // Update logo evaluation card
+        // Update authors details
+        const authorsDetails = document.getElementById('authorsDetails');
+        if (authorsDetails) {
+            const hasAuthors = analysisData.authors && 
+                             Array.isArray(analysisData.authors) &&
+                             analysisData.authors.length > 0;
+
+            authorsDetails.innerHTML = `
+                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
+                    <div style="width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;">
+                        <div style="font-size: 5em; color: var(--${hasAuthors ? 'success' : 'danger'}-color);">
+                            <i class="fas fa-${hasAuthors ? 'check' : 'times'}-circle"></i>
+                        </div>
+                    </div>
+                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
+                        ${hasAuthors ? `${analysisData.authors.length} author(s) present` : 'No authors found'}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Update font details
+        const fontDetails = document.getElementById('fontDetails');
+        if (fontDetails && analysisData.font_sizes) {
+            const MIN_ACCESSIBLE_FONT = 14.0;
+            let totalFonts = 0;
+            let accessibleFonts = 0;
+
+            Object.values(analysisData.font_sizes).forEach(font => {
+                totalFonts++;
+                if (font.font_size >= MIN_ACCESSIBLE_FONT) {
+                    accessibleFonts++;
+                }
+            });
+
+            const score = totalFonts > 0 ? Math.round((accessibleFonts / totalFonts) * 100) : 0;
+            const scoreColor = score >= 75 ? '#2ec4b6' : score >= 50 ? '#ff9f1c' : '#ef476f';
+
+            fontDetails.innerHTML = `
+                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
+                    <div style="width: 200px; height: 200px;">
+                        <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
+                            <path d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke="#eee"
+                                stroke-width="2"
+                            />
+                            <path d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke="${scoreColor}"
+                                stroke-width="2"
+                                stroke-dasharray="${score}, 100"
+                                style="transform: rotate(-90deg); transform-origin: center;"
+                            />
+                            <text x="18" y="20.35" text-anchor="middle" fill="${scoreColor}" style="font-size: 8px; font-weight: bold;">
+                                ${score}%
+                            </text>
+                        </svg>
+                    </div>
+                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
+                        ${accessibleFonts} out of ${totalFonts} font sizes are accessible
+                    </div>
+                </div>
+            `;
+        }
+
+        // Update table details
+        const tableDetails = document.getElementById('tableDetails');
+        if (tableDetails && analysisData.captions) {
+            const tableCaptions = Object.entries(analysisData.captions)
+                .filter(([key]) => key.startsWith("table_"));
+            
+            const totalTables = tableCaptions.length;
+            const tablesWithCaptions = tableCaptions.filter(([_, value]) => 
+                value.caption && 
+                value.caption.trim() !== '' && 
+                value.caption !== "No caption provided" &&
+                value.caption !== '""' &&
+                value.caption !== '"').length;
+
+            const score = totalTables > 0 ? Math.round((tablesWithCaptions / totalTables) * 100) : 0;
+            const scoreColor = score === 100 ? '#2ec4b6' : score >= 50 ? '#ff9f1c' : '#ef476f';
+
+            tableDetails.innerHTML = `
+                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
+                    <div style="width: 200px; height: 200px;">
+                        <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
+                            <path d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke="#eee"
+                                stroke-width="2"
+                            />
+                            <path d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke="${scoreColor}"
+                                stroke-width="2"
+                                stroke-dasharray="${score}, 100"
+                                style="transform: rotate(-90deg); transform-origin: center;"
+                            />
+                            <text x="18" y="20.35" text-anchor="middle" fill="${scoreColor}" style="font-size: 8px; font-weight: bold;">
+                                ${score}%
+                            </text>
+                        </svg>
+                    </div>
+                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
+                        ${tablesWithCaptions} out of ${totalTables} tables have captions
+                    </div>
+                </div>
+            `;
+        }
+
+        // Update logo details
         const logoDetails = document.getElementById('logoDetails');
         if (logoDetails && analysisData.logo_evaluation && analysisData.logo_evaluation.logos) {
             const logos = analysisData.logo_evaluation.logos;
@@ -442,142 +567,50 @@ document.addEventListener('DOMContentLoaded', function() {
                         ${simpleLogos.length} out of ${logos.length} logos are simple and accessible
                     </div>
                 </div>
-            `
-        }
-
-        // Update font size widget
-        const fontWidget = document.getElementById('fontWidget');
-        if (fontWidget) {
-            const MIN_ACCESSIBLE_FONT = 14.0;
-            let totalFonts = 0;
-            let accessibleFonts = 0;
-
-            if (analysisData.font_sizes) {
-                Object.values(analysisData.font_sizes).forEach(font => {
-                    totalFonts++;
-                    if (font.font_size >= MIN_ACCESSIBLE_FONT) {
-                        accessibleFonts++;
-                    }
-                });
-            }
-
-            const score = totalFonts > 0 ? Math.round((accessibleFonts / totalFonts) * 100) : 0;
-            const scoreColor = score >=75 ? '#2ec4b6' : score >= 50 ? '#ff9f1c' : '#ef476f';
-
-            fontWidget.innerHTML = `
-                <h2 class="metric-title">
-                    <i class="fas fa-text-height"></i>
-                    Font Sizes
-                </h2>
-                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
-                    <div style="width: 200px; height: 200px;">
-                        <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                            <path d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="#eee"
-                                stroke-width="2"
-                            />
-                            <path d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="${scoreColor}"
-                                stroke-width="2"
-                                stroke-dasharray="${score}, 100"
-                                style="transform: rotate(-90deg); transform-origin: center;"
-                            />
-                            <text x="18" y="20.35" text-anchor="middle" fill="${scoreColor}" style="font-size: 8px; font-weight: bold;">
-                                ${score}%
-                            </text>
-                        </svg>
-                    </div>
-                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
-                        ${accessibleFonts} out of ${totalFonts} font sizes are accessible
-                    </div>
-                </div>
             `;
-
-            fontWidget.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (!analysisData.font_sizes) {
-                    sessionStorage.setItem('fontData', JSON.stringify([]));
-                } else {
-                    sessionStorage.setItem('fontData', JSON.stringify(analysisData.font_sizes));
-                }
-                window.location.href = 'font_analysis.html';
-            });
         }
 
-        // Update table widget
-        const tableWidget = document.getElementById('tableWidget');
-        if (tableWidget) {
-            let totalTables = 0;
-            let tablesWithCaptions = 0;
-
-            if (analysisData.captions) {
-                const tableCaptions = Object.entries(analysisData.captions)
-                    .filter(([key]) => key.startsWith("table_"));
-                
-                totalTables = tableCaptions.length;
-                tablesWithCaptions = tableCaptions.filter(([_, value]) => 
-                    value.caption && value.caption.trim() !== '' && value.caption !== "No caption provided").length;
-            }
-
-            const score = totalTables > 0 ? Math.round((tablesWithCaptions / totalTables) * 100) : 0;
-            const scoreColor = score === 100 ? '#2ec4b6' : score >= 50 ? '#ff9f1c' : '#ef476f';
-
-            tableWidget.innerHTML = `
-                <h2 class="metric-title">
-                    <i class="fas fa-table"></i>
-                    Table Evaluation
-                </h2>
-                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
-                    <div style="width: 200px; height: 200px;">
-                        <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                            <path d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="#eee"
-                                stroke-width="2"
-                            />
-                            <path d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="${scoreColor}"
-                                stroke-width="2"
-                                stroke-dasharray="${score}, 100"
-                                style="transform: rotate(-90deg); transform-origin: center;"
-                            />
-                            <text x="18" y="20.35" text-anchor="middle" fill="${scoreColor}" style="font-size: 8px; font-weight: bold;">
-                                ${score}%
-                            </text>
-                        </svg>
-                    </div>
-                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
-                        ${tablesWithCaptions} out of ${totalTables} tables have captions
-                    </div>
-                </div>
-            `;
-
-            tableWidget.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (!analysisData.captions) {
-                    sessionStorage.setItem('tableData', JSON.stringify([]));
-                } else {
-                    const tableCaptions = Object.entries(analysisData.captions)
-                        .filter(([key]) => key.startsWith("table_"))
-                        .map(([key, val]) => ({ id: key, ...val }));
-                    sessionStorage.setItem('tableData', JSON.stringify(tableCaptions));
+        // Make all metric cards accessible via keyboard
+        document.querySelectorAll('.metric-card').forEach(card => {
+            card.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const clickEvent = new MouseEvent('click', {
+                        bubbles: true,
+                        cancelable: true,
+                        view: window
+                    });
+                    this.dispatchEvent(clickEvent);
                 }
-                window.location.href = 'table_analysis.html';
             });
-        }
+        });
     }
 
     // Start the initialization
-    initializeAnalysis().catch(error => {});
+    initializeAnalysis().catch(error => {
+        console.error('Error initializing analysis:', error);
+        
+        // Create accessible error message
+        const errorMessage = document.createElement('div');
+        errorMessage.setAttribute('role', 'alert');
+        errorMessage.style.padding = '20px';
+        errorMessage.style.margin = '20px auto';
+        errorMessage.style.backgroundColor = '#ffe3e3';
+        errorMessage.style.color = '#e63946';
+        errorMessage.style.borderRadius = '8px';
+        errorMessage.style.textAlign = 'center';
+        errorMessage.style.maxWidth = '800px';
+        errorMessage.innerHTML = `
+            <h2>Error Loading Analysis</h2>
+            <p>There was a problem loading the analysis data. Please try uploading your document again.</p>
+            <a href="index.html" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #0a3d91; color: white; text-decoration: none; border-radius: 4px;">Return to Upload Page</a>
+        `;
+        
+        // Clear the container and add the error message
+        const container = document.querySelector('.container');
+        if (container) {
+            container.innerHTML = '';
+            container.appendChild(errorMessage);
+        }
+    });
 });

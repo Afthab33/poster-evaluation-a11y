@@ -8,23 +8,70 @@ document.addEventListener('DOMContentLoaded', () => {
     const analyzeBtn = document.getElementById('analyzeBtn');
     const progressBarContainer = document.getElementById('progressBarContainer');
     const progressBar = document.getElementById('progressBar');
+    const factContainer = document.getElementById('factContainer');
+    const factText = document.getElementById('factText');
   
     let currentFile = null;
+    let factInterval = null;
+    
+    // Array of accessibility facts related to poster design
+    const accessibilityFacts = [
+        "Did you know? <span class='fact-highlight'>Color contrast</span> of at least 4.5:1 for normal text ensures readability for people with visual impairments.",
+        "<span class='fact-highlight'>Font size</span> of at least 18pt (24px) is recommended for posters to ensure readability from a distance.",
+        "Nearly <span class='fact-highlight'>1 in 12 men</span> and <span class='fact-highlight'>1 in 200 women</span> have some form of color vision deficiency.",
+        "Using <span class='fact-highlight'>descriptive alt text</span> for images helps screen reader users understand your poster's visual content.",
+        "Simple, clean <span class='fact-highlight'>logos</span> are more easily recognizable and accessible than complex designs with fine details.",
+        "<span class='fact-highlight'>High-resolution images</span> (300 DPI or higher) ensure your poster looks crisp and professional when printed.",
+        "About <span class='fact-highlight'>15% of the world's population</span> lives with some form of disability, making accessibility a universal concern.",
+        "Using <span class='fact-highlight'>headers and a clear hierarchy</span> in your poster helps visitors quickly navigate and understand your content.",
+        "For hyperlinks, using <span class='fact-highlight'>descriptive link text</span> instead of 'click here' improves accessibility and SEO.",
+        "The <span class='fact-highlight'>WCAG (Web Content Accessibility Guidelines)</span> are also applicable to print materials like posters.",
+        "Avoiding <span class='fact-highlight'>overcrowded layouts</span> with adequate white space improves focus and comprehension for all viewers.",
+        "<span class='fact-highlight'>Sans-serif fonts</span> like Arial, Calibri, or Verdana are generally more readable for digital displays and posters.",
+        "Make sure any <span class='fact-highlight'>QR codes</span> on your poster are at least 1 inch (2.5cm) in size with adequate quiet zones.",
+        "Not all disabilities are visible – designing with <span class='fact-highlight'>cognitive accessibility</span> in mind benefits everyone.",
+        "Using <span class='fact-highlight'>clear language</span> and avoiding jargon makes your poster more accessible to a wider audience.",
+        "Analyzing <span class='fact-highlight'>font size</span> on your poster ensures your message can be read from appropriate viewing distances.",
+        "<span class='fact-highlight'>Table captions</span> help explain the purpose and context of data tables for better comprehension.",
+        "For diagrams, include <span class='fact-highlight'>text descriptions</span> of the key information they convey for accessibility.",
+        "<span class='fact-highlight'>Proper layout</span> with clear sections helps guide readers through your poster in a logical sequence.",
+        "Using a <span class='fact-highlight'>color-blind friendly palette</span> ensures your poster's information is accessible to everyone."
+    ];
+    
+    // Function to display random accessibility facts
+    function showRandomFact() {
+        const randomIndex = Math.floor(Math.random() * accessibilityFacts.length);
+        factText.innerHTML = accessibilityFacts[randomIndex];
+    }
+
+    // Make uploadBox keyboard accessible
+    if (uploadBox) {
+        uploadBox.addEventListener('keydown', (e) => {
+            // Trigger click on Enter or Space
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                chooseFileBtn.click();
+            }
+        });
+    }
   
     chooseFileBtn?.addEventListener('click', () => fileInput?.click());
   
     uploadBox?.addEventListener('dragover', (e) => {
         e.preventDefault();
         uploadBox.style.backgroundColor = '#e0f7ff';
+        uploadBox.setAttribute('aria-label', 'Release to upload file');
     });
   
     uploadBox?.addEventListener('dragleave', () => {
         uploadBox.style.backgroundColor = 'transparent';
+        uploadBox.setAttribute('aria-label', null);
     });
   
     uploadBox?.addEventListener('drop', (e) => {
         e.preventDefault();
         uploadBox.style.backgroundColor = 'transparent';
+        uploadBox.setAttribute('aria-label', null);
         if (e.dataTransfer.files[0]) {
             handleFileUpload(e.dataTransfer.files[0]);
         }
@@ -53,15 +100,34 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBarContainer.style.display = 'block';
         analyzeBtnContainer.style.display = 'none';
   
+        // Update ARIA attributes
+        progressContainer.setAttribute('aria-label', `File ${file.name} selected`);
+        progressBarContainer.setAttribute('aria-valuenow', '0');
+  
         progressBar.style.width = '0%';
         progressBar.style.transition = 'width 2s ease-in-out';
   
         setTimeout(() => {
             progressBar.style.width = '100%';
+            progressBarContainer.setAttribute('aria-valuenow', '100');
   
             setTimeout(() => {
                 progressBarContainer.style.display = 'none';
                 analyzeBtnContainer.style.display = 'block';
+                
+                // Set focus to analyze button for better keyboard accessibility
+                analyzeBtn.focus();
+                
+                // Announce completion to screen readers
+                const announcer = document.createElement('div');
+                announcer.setAttribute('aria-live', 'polite');
+                announcer.classList.add('sr-only');
+                announcer.textContent = 'File uploaded successfully. Ready for analysis.';
+                document.body.appendChild(announcer);
+                
+                setTimeout(() => {
+                    document.body.removeChild(announcer);
+                }, 1000);
             }, 2000);
         }, 100);
     }
@@ -72,8 +138,24 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
   
+        // Replace text with loading animation
         analyzeBtn.disabled = true;
-        analyzeBtn.textContent = 'Analyzing...';
+        analyzeBtn.innerHTML = `
+            <div class="spinner-container">
+                <div class="spinner"></div>
+                <span>Analyzing...</span>
+            </div>
+        `;
+        analyzeBtn.setAttribute('aria-label', 'Analyzing document, please wait');
+        
+        // Show fact container and start displaying facts
+        if (factContainer) {
+            factContainer.style.display = 'block';
+            showRandomFact(); // Show first fact immediately
+            
+            // Change facts every 5 seconds
+            factInterval = setInterval(showRandomFact, 5000);
+        }
   
         try {
             const formData = new FormData();
@@ -131,16 +213,62 @@ document.addEventListener('DOMContentLoaded', () => {
                     font_sizes: result.font_sizes || {}
             };
 
+            // Clear the fact interval before navigation
+            if (factInterval) {
+                clearInterval(factInterval);
+            }
+
             sessionStorage.setItem('analysisData', JSON.stringify(analysisData));
             window.location.href = 'analysis.html';
         } catch (error) {
+            console.error('Error during analysis:', error);
             alert('Error analyzing file. Please try again.');
-        } finally {
+            
+            // Clear the fact interval and hide the container on error
+            if (factInterval) {
+                clearInterval(factInterval);
+                factInterval = null;
+            }
+            
+            if (factContainer) {
+                factContainer.style.display = 'none';
+            }
+
+            // Reset button state and add appropriate ARIA attributes
             analyzeBtn.disabled = false;
-            analyzeBtn.textContent = 'Analyze';
+            analyzeBtn.innerHTML = 'Analyze';
+            analyzeBtn.setAttribute('aria-label', 'Analyze document for accessibility');
+            
+            // Announce error to screen readers
+            const errorAnnouncer = document.createElement('div');
+            errorAnnouncer.setAttribute('aria-live', 'assertive');
+            errorAnnouncer.classList.add('sr-only');
+            errorAnnouncer.textContent = 'Error analyzing file. Please try again.';
+            document.body.appendChild(errorAnnouncer);
+            
+            setTimeout(() => {
+                document.body.removeChild(errorAnnouncer);
+            }, 1000);
         }
     });
   
+    // Add screen reader only style
+    const style = document.createElement('style');
+    style.textContent = `
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    `;
+    document.head.appendChild(style);
+
     if (window.location.pathname.includes('analysis.html')) {
         setTimeout(() => {
             const widget = document.getElementById('widget');
@@ -294,4 +422,3 @@ if (tableWidget) {
 
     }
 });
-  
