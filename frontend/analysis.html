@@ -272,7 +272,7 @@
 
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 25px;
             margin: 20px 0 40px 0;
         }
@@ -287,7 +287,7 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            height: 220px;
+            height: 280px; /* Increased height */
             display: flex;
             flex-direction: column;
         }
@@ -320,7 +320,7 @@
 
         .metric-title {
             font-size: 1.2em;
-            color: var(--text-primary);
+            color: var (--text-primary);
             margin-bottom: 20px;
             font-weight: 600;
             display: flex;
@@ -350,13 +350,52 @@
         .metric-details {
             color: var(--text-secondary);
             text-align: center;
+            width: 100%;
+        }
+
+        /* Percentage container styles */
+        .percentage-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            width: 100%;
+        }
+
+        .percentage-container svg {
+            width: 120px; /* Fixed width for the chart */
+            height: 120px; /* Fixed height for the chart */
+        }
+
+        .percentage-container svg text {
+            font-size: 10px !important; /* Ensure text size is large enough */
+            font-weight: bold;
+        }
+
+        .percentage-container .icon-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 120px;
+            font-size: 5em;
+        }
+
+        .percentage-container .status-text {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.1em;
+            line-height: 1.4;
+            max-width: 100%;
+            margin-top: 10px;
         }
 
         footer {
             text-align: center;
             padding: 20px 0;
             margin-top: 40px;
-            color: var(--text-secondary);
+            color: var (--text-secondary);
             font-size: 0.9rem;
         }
 
@@ -378,7 +417,11 @@
             }
 
             .metrics-grid {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+
+            .metric-card {
+                height: 250px;
             }
 
             .image-container {
@@ -485,11 +528,8 @@
                     <i class="fas fa-puzzle-piece"></i>
                     Poster Components Analysis
                 </h2>
-                <div class="image-container">
-                    <div class="components-image">
-                        <h3>Components Breakdown</h3>
-                        <img id="componentsImage" src="" alt="Poster components breakdown showing different elements like text, images, and logos" style="max-width: 100%; height: auto;" />
-                    </div>
+                <div class="components-image">
+                    <img id="componentsImage" src="" alt="Poster components breakdown showing different elements like text, images, and logos" style="max-width: 100%; height: auto;" />
                 </div>
             </section>
 
@@ -507,9 +547,6 @@
                             Color Contrast
                         </h3>
                         <div class="metric-content">
-                            <div class="metric-icon">
-                                <i class="fas fa-eye"></i>
-                            </div>
                             <div class="metric-details" id="contrastDetails">
                                 Analyzing contrast ratios for readability...
                             </div>
@@ -523,9 +560,6 @@
                             Logo Evaluation
                         </h3>
                         <div class="metric-content">
-                            <div class="metric-icon">
-                                <i class="fas fa-certificate"></i>
-                            </div>
                             <div class="metric-details" id="logoDetails">
                                 Analyzing logo complexity and visibility...
                             </div>
@@ -539,9 +573,6 @@
                             Hyperlinks
                         </h3>
                         <div class="metric-content">
-                            <div class="metric-icon">
-                                <i class="fas fa-external-link-alt"></i>
-                            </div>
                             <div class="metric-details" id="hyperlinksDetails">
                                 Analyzing hyperlink accessibility...
                             </div>
@@ -555,9 +586,6 @@
                             Image Resolution
                         </h3>
                         <div class="metric-content">
-                            <div class="metric-icon">
-                                <i class="fas fa-compress-arrows-alt"></i>
-                            </div>
                             <div class="metric-details" id="resolutionDetails">
                                 Analyzing image quality and DPI...
                             </div>
@@ -571,9 +599,6 @@
                             Diagrams
                         </h3>
                         <div class="metric-content">
-                            <div class="metric-icon">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
                             <div class="metric-details" id="diagramDetails">
                                 Analyzing diagram accessibility...
                             </div>
@@ -587,9 +612,6 @@
                             Authors
                         </h3>
                         <div class="metric-content">
-                            <div class="metric-icon">
-                                <i class="fas fa-user-edit"></i>
-                            </div>
                             <div class="metric-details" id="authorsDetails">
                                 Analyzing author information...
                             </div>
@@ -597,15 +619,12 @@
                     </div>
                     
                     <!-- Font Sizes Card -->
-                    <div class="metric-card" onclick="window.location.href='font_analysis.html'" tabindex="0" role="button" aria-label="View font size analysis">
+                    <div class="metric-card" id="fontCard" onclick="window.location.href='font_analysis.html'" tabindex="0" role="button" aria-label="View font size analysis">
                         <h3 class="metric-title">
                             <i class="fas fa-text-height"></i>
                             Font Sizes
                         </h3>
                         <div class="metric-content">
-                            <div class="metric-icon">
-                                <i class="fas fa-font"></i>
-                            </div>
                             <div class="metric-details" id="fontDetails">
                                 Analyzing font accessibility...
                             </div>
@@ -619,9 +638,6 @@
                             Tables
                         </h3>
                         <div class="metric-content">
-                            <div class="metric-icon">
-                                <i class="fas fa-border-all"></i>
-                            </div>
                             <div class="metric-details" id="tableDetails">
                                 Analyzing table structure and accessibility...
                             </div>
@@ -629,40 +645,7 @@
                     </div>
                 </div>
             </section>
-            
-            <section aria-labelledby="accessibility-tips-heading">
-                <h2 id="accessibility-tips-heading" class="section-title">
-                    <i class="fas fa-lightbulb"></i>
-                    Accessibility Tips
-                </h2>
-                
-                <div style="background: #f8f9fa; border-radius: 12px; padding: 25px; margin-top: 20px;">
-                    <ul style="list-style-type: none; padding: 0;">
-                        <li style="padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.08); display: flex; align-items: flex-start;">
-                            <i class="fas fa-check-circle" style="color: var(--success-color); margin-right: 10px; margin-top: 3px;"></i>
-                            <span>Ensure color contrast ratios meet WCAG 2.1 AA standards (4.5:1 for normal text, 3:1 for large text)</span>
-                        </li>
-                        <li style="padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.08); display: flex; align-items: flex-start;">
-                            <i class="fas fa-check-circle" style="color: var(--success-color); margin-right: 10px; margin-top: 3px;"></i>
-                            <span>Use fonts that are at least 18pt (24px) for poster text to ensure readability from a distance</span>
-                        </li>
-                        <li style="padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.08); display: flex; align-items: flex-start;">
-                            <i class="fas fa-check-circle" style="color: var(--success-color); margin-right: 10px; margin-top: 3px;"></i>
-                            <span>Provide alternative text descriptions for diagrams and visual data</span>
-                        </li>
-                        <li style="padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.08); display: flex; align-items: flex-start;">
-                            <i class="fas fa-check-circle" style="color: var(--success-color); margin-right: 10px; margin-top: 3px;"></i>
-                            <span>Maintain high-resolution images (at least 300 DPI) for print materials</span>
-                        </li>
-                        <li style="padding: 10px 0; display: flex; align-items: flex-start;">
-                            <i class="fas fa-check-circle" style="color: var(--success-color); margin-right: 10px; margin-top: 3px;"></i>
-                            <span>Structure content with clear headings and a logical reading order</span>
-                        </li>
-                    </ul>
-                </div>
-            </section>
         </main>
-
         <footer>
             <p>&copy; 2025 A11Y PDF - Making documents accessible for everyone</p>
         </footer>

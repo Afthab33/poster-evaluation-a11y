@@ -409,97 +409,193 @@ overviewSection.insertBefore(logoImage, overviewSection.firstChild);
         }
 
         function updateDetailedView() {
-            if (!analysisData || !analysisData.logo_evaluation || !analysisData.logo_evaluation.logos) {
-                console.error('No logo data available');
-                return;
-            }
-
-            const logos = analysisData.logo_evaluation.logos;
-            if (logos.length === 0) {
-                console.error('No logos found');
-                return;
-            }
-
-            const currentLogo = logos[currentLogoIndex];
-            const sectionImage = document.getElementById('sectionImage');
-            const sectionDetails = document.getElementById('sectionDetails');
-            const logoNumber = currentLogoIndex + 1;
-
-            console.log(`Loading logo ${logoNumber}:`, currentLogo);
-
-            // Update image - Get the first key that starts with 'logo_' from the current logo object
-            const logoKey = Object.keys(currentLogo).find(key => key.startsWith('logo_'));
-            if (logoKey && currentLogo[logoKey]) {
-                const imagePath = currentLogo[logoKey];
-                const cleanPath = imagePath.replace(/^http:\/\/127\.0\.0\.1:5000\//, '');
-                const fullUrl = `https://poster-evaluation-a11y-production.up.railway.app/${cleanPath}`;
-                console.log(`Attempting to load image from full URL: ${fullUrl}`);
-                
-                fetch(fullUrl)
-                    .then(response => {
-                        console.log(`Response status for logo ${logoNumber}:`, response.status);
-                        if (!response.ok) {
-                            throw new Error(`Network response was not ok - Status: ${response.status}, Status Text: ${response.statusText}`);
-                        }
-                        return response.blob();
-                    })
-                    .then(blob => {
-                        sectionImage.src = URL.createObjectURL(blob);
-                        sectionImage.style.display = 'block';
-                        console.log(`Successfully loaded logo ${logoNumber} from key ${logoKey}`);
-                    })
-                    .catch(error => {
-                        console.error(`Failed to load logo ${logoNumber} image:`, error);
-                        console.error(`Full URL that failed: ${fullUrl}`);
-                        sectionImage.style.display = 'none';
-                    });
-            } else {
-                console.error(`No image path found for logo ${logoNumber}`, currentLogo);
-                sectionImage.style.display = 'none';
-            }
-
-            // Update details with accessibility information for complex logos
-            let detailsHTML = `
-                
-                <p><strong>Type:</strong> ${currentLogo.label}</p>
-                ${currentLogo.description ? `<p><strong>Description:</strong> ${currentLogo.description}</p>` : ''}
-            `;
-
-            // Update the logo number in the image container
-            document.querySelector('.logo-number').textContent = logoNumber;
-
-            if (currentLogo.label === "Complex") {
-                detailsHTML += `
-                    <div class="accessibility-info" style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
-                        <h4 style="color: #ef476f; margin-top: 0;">Complex Logo: Accessibility Considerations</h4>
-                        
-                        <p><strong>What Makes This Logo Complex:</strong></p>
-                        <ul style="margin-bottom: 20px;">
-                            <li>Multiple visual elements or intricate designs</li>
-                            <li>Detailed patterns or gradients</li>
-                           
-                            <li>Complex color combinations</li>
-                        </ul>
-
-                       
-
-                        <p><strong>Recommendations:</strong></p>
-                        <ul>
-                            <li>Provide a simplified version for small sizes</li>
-                            <li>Ensure high contrast between elements</li>
-                            
-                            <li>Consider creating a more minimal version for accessibility</li>
-                        </ul>
-                    </div>
-                `;
-            }
-
-            sectionDetails.innerHTML = detailsHTML;
-
-            // Update navigation buttons
-            document.getElementById('prevButton').disabled = currentLogoIndex === 0;
-            document.getElementById('nextButton').disabled = currentLogoIndex === logos.length - 1;
+        if (!analysisData || !analysisData.logo_evaluation || !analysisData.logo_evaluation.logos) {
+            console.error('No logo data available');
+            return;
         }
+
+        const logos = analysisData.logo_evaluation.logos;
+        if (logos.length === 0) {
+            console.error('No logos found');
+            return;
+        }
+
+        const currentLogo = logos[currentLogoIndex];
+        const sectionImage = document.getElementById('sectionImage');
+        const sectionDetails = document.getElementById('sectionDetails');
+        const logoNumber = currentLogoIndex + 1;
+
+        console.log(`Loading logo ${logoNumber}:`, currentLogo);
+
+        // Update the logo number in the image container
+        document.querySelector('.logo-number').textContent = logoNumber;
+
+        // Get the logo path - try multiple approaches to find the correct path
+        let imagePath = null;
+        
+        // Method 1: Direct key access
+        const logoKey = `logo_${logoNumber}`;
+        if (currentLogo[logoKey]) {
+            imagePath = currentLogo[logoKey];
+        } 
+        // Method 2: Search for any key starting with 'logo_'
+        else {
+            const logoKeyAlt = Object.keys(currentLogo).find(key => key.startsWith('logo_'));
+            if (logoKeyAlt) {
+                imagePath = currentLogo[logoKeyAlt];
+            }
+        }
+        
+        if (imagePath) {
+            // Handle different URL formats from the server
+            let fullUrl = imagePath;
+            
+            // Clean the path if needed
+            if (!fullUrl.startsWith('http')) {
+                fullUrl = `https://poster-evaluation-a11y-production.up.railway.app/${imagePath}`;
+            }
+            
+            console.log(`Attempting to load image from URL: ${fullUrl}`);
+            
+            // Add a timestamp to force reload and avoid caching issues
+            const cacheBuster = `?t=${new Date().getTime()}`;
+            
+            fetch(fullUrl + cacheBuster)
+                .then(response => {
+                    console.log(`Response for logo ${logoNumber}:`, response.status, response.statusText);
+                    if (!response.ok) {
+                        throw new Error(`HTTP status ${response.status}: ${response.statusText}`);
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const objectUrl = URL.createObjectURL(blob);
+                    sectionImage.src = objectUrl;
+                    sectionImage.style.display = 'block';
+                    console.log(`Successfully loaded logo ${logoNumber}`);
+                })
+                .catch(error => {
+                    console.error(`Failed to load logo ${logoNumber}:`, error);
+                    
+                    // Attempt an alternative URL format as fallback
+                    const fallbackUrl = `https://poster-evaluation-a11y-production.up.railway.app/get-image/Output/Logos/logo_${logoNumber}.png${cacheBuster}`;
+                    console.log(`Trying fallback URL: ${fallbackUrl}`);
+                    
+                    fetch(fallbackUrl)
+                        .then(response => {
+                            if (!response.ok) throw new Error(`Fallback failed: ${response.status}`);
+                            return response.blob();
+                        })
+                        .then(blob => {
+                            sectionImage.src = URL.createObjectURL(blob);
+                            sectionImage.style.display = 'block';
+                            console.log(`Successfully loaded logo ${logoNumber} using fallback URL`);
+                        })
+                        .catch(err => {
+                            console.error(`All attempts failed for logo ${logoNumber}:`, err);
+                            sectionImage.style.display = 'none';
+                            sectionImage.src = '';
+                            // Show error message in the image container
+                            const imgContainer = document.querySelector('.image-container');
+                            if (imgContainer) {
+                                const errorMsg = document.createElement('div');
+                                errorMsg.style.color = 'red';
+                                errorMsg.style.marginTop = '20px';
+                                errorMsg.innerHTML = `<i class="fas fa-exclamation-circle"></i> Unable to load logo image.<br>Please try refreshing the page.`;
+                                imgContainer.appendChild(errorMsg);
+                            }
+                        });
+                });
+        } else {
+            console.error(`No image path found for logo ${logoNumber}`, currentLogo);
+            sectionImage.style.display = 'none';
+            const imgContainer = document.querySelector('.image-container');
+            if (imgContainer) {
+                const errorMsg = document.createElement('div');
+                errorMsg.style.color = 'red';
+                errorMsg.style.marginTop = '20px';
+                errorMsg.innerHTML = `<i class="fas fa-exclamation-circle"></i> No image data available for Logo ${logoNumber}`;
+                // Remove any existing error messages before adding new one
+                const existingError = imgContainer.querySelector('div[style*="color: red"]');
+                if (existingError) imgContainer.removeChild(existingError);
+                imgContainer.appendChild(errorMsg);
+            }
+        }
+        
+        // Update details with logo information
+        let detailsHTML = `
+            <h3 style="margin-top: 0; color: var(--primary-color);">Logo ${logoNumber} Details</h3>
+            <p><strong>Type:</strong> ${currentLogo.label}</p>
+        `;
+
+        // Add specific guidance based on logo type
+        if (currentLogo.label === "Complex") {
+            detailsHTML += `
+                <div style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                    <h4 style="color: #ef476f; margin-top: 0;">Complex Logo: Accessibility Considerations</h4>
+                    
+                    <p><strong>What Makes This Logo Complex:</strong></p>
+                    <ul style="margin-bottom: 20px;">
+                        <li>Multiple visual elements or intricate designs</li>
+                        <li>Detailed patterns or gradients</li>
+                        <li>Complex color combinations</li>
+                    </ul>
+
+                    <p><strong>Accessibility Impact:</strong></p>
+                    <ul style="margin-bottom: 20px;">
+                        <li>May be difficult to recognize at small sizes</li>
+                        <li>Details can be lost when scaled down</li>
+                        <li>May create problems for users with visual impairments</li>
+                        <li>Can cause readability issues on various backgrounds</li>
+                    </ul>
+
+                    <p><strong>Recommendations:</strong></p>
+                    <ul>
+                        <li>Provide a simplified version for small sizes</li>
+                        <li>Ensure high contrast between elements</li>
+                        <li>Test how the logo appears at different sizes</li>
+                        <li>Consider creating a more minimal version for accessibility</li>
+                    </ul>
+                </div>
+            `;
+        } else {
+            detailsHTML += `
+                <div style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                    <h4 style="color: #2ec4b6; margin-top: 0;">Simple Logo: Good Accessibility</h4>
+                    
+                    <p><strong>Why This Logo Is Accessible:</strong></p>
+                    <ul style="margin-bottom: 20px;">
+                        <li>Clean, minimal design</li>
+                        <li>Simple shapes and clear forms</li>
+                        <li>Limited color palette</li>
+                        <li>Good scalability for different sizes</li>
+                    </ul>
+
+                    <p><strong>Accessibility Benefits:</strong></p>
+                    <ul style="margin-bottom: 20px;">
+                        <li>Easily recognizable even at small sizes</li>
+                        <li>Works well in different contexts</li>
+                        <li>Better for users with visual impairments</li>
+                        <li>Maintains clarity across different devices</li>
+                    </ul>
+
+                    <p><strong>Best Practices:</strong></p>
+                    <ul>
+                        <li>Continue using simple, clean designs</li>
+                        <li>Maintain good color contrast</li>
+                        <li>Test logo against different backgrounds</li>
+                        <li>Consider how the logo appears in grayscale</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        sectionDetails.innerHTML = detailsHTML;
+
+        // Update navigation buttons
+        document.getElementById('prevButton').disabled = currentLogoIndex === 0;
+        document.getElementById('nextButton').disabled = currentLogoIndex === logos.length - 1;
+    }
 
         function navigateSection(direction) {
             if (!analysisData || !analysisData.logo_evaluation || !analysisData.logo_evaluation.logos) return;
@@ -523,4 +619,4 @@ overviewSection.insertBefore(logoImage, overviewSection.firstChild);
         });
     </script>
 </body>
-</html> 
+</html>

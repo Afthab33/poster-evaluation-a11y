@@ -4,58 +4,188 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Links Analysis</title>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-light: #4895ef;
+            --success-color: #2ec4b6;
+            --danger-color: #ef476f;
+            --warning-color: #ffd60a;
+            --text-primary: #2b2d42;
+            --text-secondary: #8d99ae;
+            --bg-light: #f8f9fa;
+            --bg-gradient: linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%);
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            --card-shadow-hover: 0 15px 30px rgba(67,97,238,0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            text-align: center;
-            padding: 5vh;
+            padding: 40px 20px;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
         }
+
         .container {
-            background: white;
-            padding: 2vh;
-            border-radius: 1.5vh;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            width: 50%;
-            margin: auto;
-            text-align: left;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
         }
-        table {
+
+        h1 {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            transition: var(--transition);
+        }
+
+        .back-button:hover {
+            background: var(--text-secondary);
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .overview-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-item {
+            padding: 20px;
+            background: var(--bg-light);
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .links-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 2vh;
+            margin-top: 20px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
         }
-        th, td {
-            padding: 10px;
+
+        .links-table th,
+        .links-table td {
+            padding: 15px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
         }
-        th {
-            background-color: #0a3d91;
+
+        .links-table th {
+            background: var(--primary-color);
             color: white;
+            font-weight: 600;
         }
+
+        .links-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .links-table tr:hover {
+            background: var(--bg-light);
+        }
+
         .status-working {
-            color: green;
-            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background-color: rgba(46, 196, 182, 0.1);
+            color: var(--success-color);
+            font-weight: 500;
         }
+
         .status-broken {
-            color: red;
-            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background-color: rgba(239, 71, 111, 0.1);
+            color: var(--danger-color);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .overview-stats {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-
-    <h1>Links Analysis</h1>
-
     <div class="container">
-        <table>
+        <a href="analysis.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Back to Analysis
+        </a>
+
+        <h1>Links Analysis</h1>
+
+        <div class="overview-stats">
+            <div class="stat-item">
+                <div class="stat-label">Total Links</div>
+                <div class="stat-value" id="totalLinks">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Working Links</div>
+                <div class="stat-value" id="workingLinks">0</div>
+            </div>
+        </div>
+
+        <table class="links-table" aria-label="Links analysis table">
             <thead>
                 <tr>
-                    <th>Link</th>
-                    <th>Status</th>
+                    <th scope="col">Link</th>
+                    <th scope="col">Status</th>
                 </tr>
             </thead>
             <tbody id="linksTable">
@@ -66,25 +196,49 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // ✅ Retrieve Links Data
+            // Retrieve Links Data
             const linksData = JSON.parse(sessionStorage.getItem('linksData'));
 
-            console.log("✅ Retrieved Links Data:", linksData);
+            console.log("Retrieved Links Data:", linksData);
 
-            if (!linksData) {
-                document.getElementById("linksTable").innerHTML = `<tr><td colspan="2" style="color:red;">No links available</td></tr>`;
+            if (!linksData || linksData.length === 0) {
+                document.getElementById("linksTable").innerHTML = `
+                    <tr>
+                        <td colspan="2" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                            <i class="fas fa-info-circle" style="font-size: 2em; margin-bottom: 15px; color: var(--primary-color);"></i>
+                            <p>No links available in this document.</p>
+                        </td>
+                    </tr>
+                `;
+                document.getElementById("totalLinks").textContent = "0";
+                document.getElementById("workingLinks").textContent = "0";
                 return;
             }
 
             const tableBody = document.getElementById("linksTable");
             tableBody.innerHTML = "";
+            
+            // Count statistics
+            const totalLinks = linksData.length;
+            const workingLinks = linksData.filter(link => link.status === 'working').length;
+            
+            // Update statistics
+            document.getElementById("totalLinks").textContent = totalLinks;
+            document.getElementById("workingLinks").textContent = workingLinks;
 
-            // ✅ Insert Links into Table
+            // Insert Links into Table
             linksData.forEach(linkObj => {
                 const row = document.createElement("tr");
+                const isWorking = linkObj.status === 'working';
+                
                 row.innerHTML = `
-                    <td><a href="https://${linkObj.link}" target="_blank">${linkObj.link}</a></td>
-                    <td class="${linkObj.status === 'working' ? 'status-working' : 'status-broken'}">${linkObj.status}</td>
+                    <td><a href="${isWorking ? 'https://' : ''}${linkObj.link}" target="_blank" rel="noopener noreferrer">${linkObj.link}</a></td>
+                    <td>
+                        <span class="${isWorking ? 'status-working' : 'status-broken'}">
+                            <i class="fas fa-${isWorking ? 'check-circle' : 'times-circle'}"></i>
+                            ${isWorking ? 'Working' : 'Broken'}
+                        </span>
+                    </td>
                 `;
                 tableBody.appendChild(row);
             });

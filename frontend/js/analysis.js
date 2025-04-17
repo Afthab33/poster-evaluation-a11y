@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusElement.classList.add('sr-only');
                 statusElement.textContent = 'Components image loaded successfully';
                 document.body.appendChild(statusElement);
-                
+            
                 setTimeout(() => {
                     document.body.removeChild(statusElement);
                 }, 1000);
@@ -74,6 +74,25 @@ document.addEventListener('DOMContentLoaded', function() {
         await fetchComponentsImage();
         await updateMetrics(analysisData);
         await updateSummarySection(analysisData);
+        
+        // Set up navigation for detailed analysis pages
+        setupDetailPageNavigation(analysisData);
+    }
+
+    // Set up navigation for detailed analysis pages
+    function setupDetailPageNavigation(analysisData) {
+        // Font Analysis Card
+        const fontCard = document.querySelector('#fontCard');
+        if (fontCard && analysisData.font_sizes) {
+            fontCard.addEventListener('click', () => {
+                // Store font data in sessionStorage for the font analysis page
+                sessionStorage.setItem('fontData', JSON.stringify(analysisData.font_sizes));
+                console.log('Font data stored in sessionStorage:', analysisData.font_sizes);
+                window.location.href = 'font_analysis.html';
+            });
+        }
+        
+        // For other detail pages, similar setup can be added here as needed
     }
 
     // New function to update the summary section
@@ -166,31 +185,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const passPercentage = Math.round((passCount / totalCount) * 100);
 
             contrastDetails.innerHTML = `
-                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
-                    <div style="width: 200px; height: 200px;">
+                <div class="percentage-container">
+                    <div style="width: 150px; height: 150px;">
                         <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                            <path d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="#eee"
-                                stroke-width="2"
-                            />
-                            <path d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="${passPercentage >= 70 ? '#2ec4b6' : passPercentage >= 50 ? '#ff9f1c' : '#ef476f'}"
-                                stroke-width="2"
-                                stroke-dasharray="${passPercentage}, 100"
-                                style="transform: rotate(-90deg); transform-origin: center;"
-                            />
-                            <text x="18" y="20.35" text-anchor="middle" fill="${passPercentage >= 70 ? '#2ec4b6' : passPercentage >= 50 ? '#ff9f1c' : '#ef476f'}" style="font-size: 8px; font-weight: bold;">
-                                ${passPercentage}%
-                            </text>
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#eee" stroke-width="2" />
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${passPercentage >= 70 ? '#2ec4b6' : passPercentage >= 50 ? '#ff9f1c' : '#ef476f'}" stroke-width="2" stroke-dasharray="${passPercentage}, 100" style="transform: rotate(-90deg); transform-origin: center;" />
+                            <text x="18" y="22" text-anchor="middle" fill="${passPercentage >= 70 ? '#2ec4b6' : passPercentage >= 50 ? '#ff9f1c' : '#ef476f'}" style="font-size: 10px; font-weight: bold;">${passPercentage}%</text>
                         </svg>
                     </div>
-                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
+                    <div class="status-text">
                         ${passCount} out of ${totalCount} sections pass accessibility standards
                     </div>
                 </div>
@@ -303,13 +306,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const isAccessible = dpi >= 300;
 
             resolutionDetails.innerHTML = `
-                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
-                    <div style="width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;">
-                        <div style="font-size: 5em; color: var(--${isAccessible ? 'success' : 'danger'}-color);">
+                <div class="percentage-container">
+                    <div style="width: 150px; height: 150px; display: flex; align-items: center; justify-content: center;">
+                        <div style="font-size: 4em; color: var(--${isAccessible ? 'success' : 'danger'}-color);">
                             <i class="fas fa-${isAccessible ? 'check' : 'times'}-circle"></i>
                         </div>
                     </div>
-                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
+                    <div class="status-text">
                         ${dpi} DPI (${isAccessible ? 'Meets' : 'Below'} recommended 300 DPI)
                     </div>
                 </div>
@@ -334,13 +337,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (totalLinks > 0) {
                 console.log('3. Condition met: totalLinks > 0');
                 hyperlinksDetails.innerHTML = `
-                    <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
-                        <div style="width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;">
-                            <div style="font-size: 5em; color: var(--success-color);">
+                    <div class="percentage-container">
+                        <div style="width: 150px; height: 150px; display: flex; align-items: center; justify-content: center;">
+                            <div style="font-size: 4em; color: var(--success-color);">
                                 <i class="fas fa-check-circle"></i>
                             </div>
                         </div>
-                        <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
+                        <div class="status-text">
                             ${totalLinks} hyperlink${totalLinks > 1 ? 's' : ''} present
                         </div>
                     </div>
@@ -348,13 +351,13 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 console.log('3. Condition not met: totalLinks <= 0');
                 hyperlinksDetails.innerHTML = `
-                    <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
-                        <div style="width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;">
-                            <div style="font-size: 5em; color: var(--danger-color);">
+                    <div class="percentage-container">
+                        <div style="width: 150px; height: 150px; display: flex; align-items: center; justify-content: center;">
+                            <div style="font-size: 4em; color: var(--danger-color);">
                                 <i class="fas fa-times-circle"></i>
                             </div>
                         </div>
-                        <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
+                        <div class="status-text">
                             No hyperlinks present
                         </div>
                     </div>
@@ -381,31 +384,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 Math.round((diagramsWithCaptions / totalDiagrams) * 100) : 0;
             
             diagramDetails.innerHTML = `
-                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
-                    <div style="width: 200px; height: 200px;">
+                <div class="percentage-container">
+                    <div style="width: 150px; height: 150px;">
                         <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                            <path d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="#eee"
-                                stroke-width="2"
-                            />
-                            <path d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="${score === 100 ? '#2ec4b6' : score >= 50 ? '#ff9f1c' : '#ef476f'}"
-                                stroke-width="2"
-                                stroke-dasharray="${score}, 100"
-                                style="transform: rotate(-90deg); transform-origin: center;"
-                            />
-                            <text x="18" y="20.35" text-anchor="middle" fill="${score === 100 ? '#2ec4b6' : score >= 50 ? '#ff9f1c' : '#ef476f'}" style="font-size: 8px; font-weight: bold;">
-                                ${score}%
-                            </text>
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#eee" stroke-width="2" />
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${score === 100 ? '#2ec4b6' : score >= 50 ? '#ff9f1c' : '#ef476f'}" stroke-width="2" stroke-dasharray="${score}, 100" style="transform: rotate(-90deg); transform-origin: center;" />
+                            <text x="18" y="22" text-anchor="middle" fill="${score === 100 ? '#2ec4b6' : score >= 50 ? '#ff9f1c' : '#ef476f'}" style="font-size: 10px; font-weight: bold;">${score}%</text>
                         </svg>
                     </div>
-                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
+                    <div class="status-text">
                         ${diagramsWithCaptions} out of ${totalDiagrams} diagrams have captions
                     </div>
                 </div>
@@ -420,14 +407,14 @@ document.addEventListener('DOMContentLoaded', function() {
                              analysisData.authors.length > 0;
 
             authorsDetails.innerHTML = `
-                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
-                    <div style="width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;">
-                        <div style="font-size: 5em; color: var(--${hasAuthors ? 'success' : 'danger'}-color);">
+                <div class="percentage-container">
+                    <div style="width: 150px; height: 150px; display: flex; align-items: center; justify-content: center;">
+                        <div style="font-size: 4em; color: var(--${hasAuthors ? 'success' : 'danger'}-color);">
                             <i class="fas fa-${hasAuthors ? 'check' : 'times'}-circle"></i>
                         </div>
                     </div>
-                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
-                        ${hasAuthors ? `${analysisData.authors.length} author(s) present` : 'No authors found'}
+                    <div class="status-text">
+                        ${hasAuthors ? `${analysisData.authors.length} author${analysisData.authors.length > 1 ? 's' : ''} present` : 'No authors found'}
                     </div>
                 </div>
             `;
@@ -451,31 +438,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const scoreColor = score >= 75 ? '#2ec4b6' : score >= 50 ? '#ff9f1c' : '#ef476f';
 
             fontDetails.innerHTML = `
-                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
-                    <div style="width: 200px; height: 200px;">
+                <div class="percentage-container">
+                    <div style="width: 150px; height: 150px;">
                         <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                            <path d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="#eee"
-                                stroke-width="2"
-                            />
-                            <path d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="${scoreColor}"
-                                stroke-width="2"
-                                stroke-dasharray="${score}, 100"
-                                style="transform: rotate(-90deg); transform-origin: center;"
-                            />
-                            <text x="18" y="20.35" text-anchor="middle" fill="${scoreColor}" style="font-size: 8px; font-weight: bold;">
-                                ${score}%
-                            </text>
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#eee" stroke-width="2" />
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${scoreColor}" stroke-width="2" stroke-dasharray="${score}, 100" style="transform: rotate(-90deg); transform-origin: center;" />
+                            <text x="18" y="22" text-anchor="middle" fill="${scoreColor}" style="font-size: 10px; font-weight: bold;">${score}%</text>
                         </svg>
                     </div>
-                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
+                    <div class="status-text">
                         ${accessibleFonts} out of ${totalFonts} font sizes are accessible
                     </div>
                 </div>
@@ -500,31 +471,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const scoreColor = score === 100 ? '#2ec4b6' : score >= 50 ? '#ff9f1c' : '#ef476f';
 
             tableDetails.innerHTML = `
-                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
-                    <div style="width: 200px; height: 200px;">
+                <div class="percentage-container">
+                    <div style="width: 150px; height: 150px;">
                         <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                            <path d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="#eee"
-                                stroke-width="2"
-                            />
-                            <path d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="${scoreColor}"
-                                stroke-width="2"
-                                stroke-dasharray="${score}, 100"
-                                style="transform: rotate(-90deg); transform-origin: center;"
-                            />
-                            <text x="18" y="20.35" text-anchor="middle" fill="${scoreColor}" style="font-size: 8px; font-weight: bold;">
-                                ${score}%
-                            </text>
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#eee" stroke-width="2" />
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${scoreColor}" stroke-width="2" stroke-dasharray="${score}, 100" style="transform: rotate(-90deg); transform-origin: center;" />
+                            <text x="18" y="22" text-anchor="middle" fill="${scoreColor}" style="font-size: 10px; font-weight: bold;">${score}%</text>
                         </svg>
                     </div>
-                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
+                    <div class="status-text">
                         ${tablesWithCaptions} out of ${totalTables} tables have captions
                     </div>
                 </div>
@@ -539,31 +494,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const percentage = logos.length > 0 ? Math.round((simpleLogos.length / logos.length) * 100) : 0;
 
             logoDetails.innerHTML = `
-                <div class="percentage-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
-                    <div style="width: 200px; height: 200px;">
+                <div class="percentage-container">
+                    <div style="width: 150px; height: 150px;">
                         <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                            <path d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="#eee"
-                                stroke-width="2"
-                            />
-                            <path d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                fill="none"
-                                stroke="${percentage >= 70 ? '#2ec4b6' : '#ef476f'}"
-                                stroke-width="2"
-                                stroke-dasharray="${percentage}, 100"
-                                style="transform: rotate(-90deg); transform-origin: center;"
-                            />
-                            <text x="18" y="20.35" text-anchor="middle" fill="${percentage >= 70 ? '#2ec4b6' : '#ef476f'}" style="font-size: 8px; font-weight: bold;">
-                                ${percentage}%
-                            </text>
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#eee" stroke-width="2" />
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${percentage >= 70 ? '#2ec4b6' : '#ef476f'}" stroke-width="2" stroke-dasharray="${percentage}, 100" style="transform: rotate(-90deg); transform-origin: center;" />
+                            <text x="18" y="22" text-anchor="middle" fill="${percentage >= 70 ? '#2ec4b6' : '#ef476f'}" style="font-size: 10px; font-weight: bold;">${percentage}%</text>
                         </svg>
                     </div>
-                    <div style="text-align: center; color: var(--text-secondary); font-size: 1.1em; line-height: 1.4;">
+                    <div class="status-text">
                         ${simpleLogos.length} out of ${logos.length} logos are simple and accessible
                     </div>
                 </div>

@@ -247,12 +247,28 @@
                 const resolution = data.image_resolution;
                 console.log('Resolution data:', resolution);
                 
+                // Format the resolution value by rounding to the nearest integer
+                let formattedResolution = resolution.Resolution;
+                
+                // If the resolution contains 'x' (e.g., '1920x1080'), format each dimension
+                if (typeof formattedResolution === 'string' && formattedResolution.includes('x')) {
+                    const [width, height] = formattedResolution.split('x').map(Number);
+                    formattedResolution = `${Math.round(width)}x${Math.round(height)}`;
+                } 
+                // If it's a numerical value (e.g., DPI), round it to an integer
+                else if (!isNaN(formattedResolution)) {
+                    formattedResolution = Math.round(formattedResolution);
+                }
+                
                 // Update Resolution value
                 document.getElementById('resolutionValue').textContent = 
-                    resolution.Resolution ? `${resolution.Resolution}` : 'N/A';
+                    formattedResolution ? `${formattedResolution}` : 'N/A';
 
                 // Add status indicators based on thresholds
-                const [width, height] = resolution.Resolution.split('x').map(Number);
+                let width = 0, height = 0;
+                if (typeof resolution.Resolution === 'string' && resolution.Resolution.includes('x')) {
+                    [width, height] = resolution.Resolution.split('x').map(Number);
+                }
                 const resolutionStatus = width >= 800 && height >= 600;
 
                 // Update the metric card with status indicator
@@ -290,4 +306,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
