@@ -29,4 +29,4 @@ RUN mkdir -p utils/Input utils/Memory/Raw\ Components utils/Output utils/Output/
 ENV PORT=8080
 
 # Run with Gunicorn instead of Flask development server
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--timeout", "120", "app:app"]
+CMD exec gunicorn --bind "0.0.0.0:$PORT" --timeout 120 app:app
