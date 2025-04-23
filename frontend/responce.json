@@ -1,0 +1,493 @@
+{
+    "authors": [
+        "Adelia Dunbar",
+        "Valerie Sant",
+        "Carol Delville"
+    ],
+    "captions": {
+        "diagram_1": {
+            "caption": "\"\"",
+            "img": "get-image/Memory/Raw Components/diagram_1.jpg"
+        },
+        "diagram_2": {
+            "caption": "\"\"",
+            "img": "get-image/Memory/Raw Components/diagram_2.jpg"
+        }
+    },
+    "color_contrast": {
+        "color_contrast_summary": "get-image/Output/Color_Contrast/color_contrast_result.png",
+        "sections": [
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    225,
+                    221,
+                    220
+                ],
+                "contrast_ratio": 9.599379198067973,
+                "section_id": 1,
+                "section_image": "get-image/Output/Color_Contrast/section_1.png",
+                "text_color": [
+                    51,
+                    49,
+                    48
+                ],
+                "threshold": 3.0,
+                "type": "plain_text"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    219,
+                    199,
+                    185
+                ],
+                "contrast_ratio": 5.595561418295812,
+                "section_id": 2,
+                "section_image": "get-image/Output/Color_Contrast/section_2.png",
+                "text_color": [
+                    76,
+                    71,
+                    72
+                ],
+                "threshold": 3.0,
+                "type": "plain_text"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    223,
+                    224,
+                    228
+                ],
+                "contrast_ratio": 6.4331135417932375,
+                "section_id": 3,
+                "section_image": "get-image/Output/Color_Contrast/section_3.png",
+                "text_color": [
+                    72,
+                    77,
+                    87
+                ],
+                "threshold": 3.0,
+                "type": "plain_text"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    223,
+                    214,
+                    209
+                ],
+                "contrast_ratio": 9.073672216070646,
+                "section_id": 4,
+                "section_image": "get-image/Output/Color_Contrast/section_4.png",
+                "text_color": [
+                    54,
+                    48,
+                    45
+                ],
+                "threshold": 3.0,
+                "type": "plain_text"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    225,
+                    224,
+                    225
+                ],
+                "contrast_ratio": 9.596934892065821,
+                "section_id": 5,
+                "section_image": "get-image/Output/Color_Contrast/section_5.png",
+                "text_color": [
+                    51,
+                    51,
+                    51
+                ],
+                "threshold": 3.0,
+                "type": "plain_text"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    224,
+                    210,
+                    202
+                ],
+                "contrast_ratio": 8.79011515515558,
+                "section_id": 6,
+                "section_image": "get-image/Output/Color_Contrast/section_6.png",
+                "text_color": [
+                    55,
+                    48,
+                    43
+                ],
+                "threshold": 3.0,
+                "type": "plain_text"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    247,
+                    249,
+                    249
+                ],
+                "contrast_ratio": 12.210188535040803,
+                "section_id": 7,
+                "section_image": "get-image/Output/Color_Contrast/section_7.png",
+                "text_color": [
+                    46,
+                    50,
+                    55
+                ],
+                "threshold": 4.5,
+                "type": "authors"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    222,
+                    205,
+                    193
+                ],
+                "contrast_ratio": 8.591857159533633,
+                "section_id": 8,
+                "section_image": "get-image/Output/Color_Contrast/section_8.png",
+                "text_color": [
+                    55,
+                    46,
+                    40
+                ],
+                "threshold": 3.0,
+                "type": "plain_text"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    221,
+                    193,
+                    173
+                ],
+                "contrast_ratio": 7.940642637180819,
+                "section_id": 9,
+                "section_image": "get-image/Output/Color_Contrast/section_9.png",
+                "text_color": [
+                    58,
+                    43,
+                    35
+                ],
+                "threshold": 4.5,
+                "type": "authors"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    221,
+                    198,
+                    182
+                ],
+                "contrast_ratio": 8.211034221004102,
+                "section_id": 10,
+                "section_image": "get-image/Output/Color_Contrast/section_10.png",
+                "text_color": [
+                    57,
+                    44,
+                    38
+                ],
+                "threshold": 3.0,
+                "type": "plain_text"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    249,
+                    251,
+                    251
+                ],
+                "contrast_ratio": 11.703220083793893,
+                "section_id": 11,
+                "section_image": "get-image/Output/Color_Contrast/section_11.png",
+                "text_color": [
+                    42,
+                    54,
+                    75
+                ],
+                "threshold": 4.5,
+                "type": "title"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    217,
+                    217,
+                    220
+                ],
+                "contrast_ratio": 8.19358165606868,
+                "section_id": 12,
+                "section_image": "get-image/Output/Color_Contrast/section_12.png",
+                "text_color": [
+                    51,
+                    57,
+                    72
+                ],
+                "threshold": 4.5,
+                "type": "heading"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    221,
+                    221,
+                    224
+                ],
+                "contrast_ratio": 7.777257665011345,
+                "section_id": 13,
+                "section_image": "get-image/Output/Color_Contrast/section_13.png",
+                "text_color": [
+                    57,
+                    63,
+                    77
+                ],
+                "threshold": 4.5,
+                "type": "heading"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    216,
+                    204,
+                    199
+                ],
+                "contrast_ratio": 6.884927154389743,
+                "section_id": 14,
+                "section_image": "get-image/Output/Color_Contrast/section_14.png",
+                "text_color": [
+                    58,
+                    61,
+                    73
+                ],
+                "threshold": 4.5,
+                "type": "heading"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    220,
+                    226,
+                    234
+                ],
+                "contrast_ratio": 8.155682430758636,
+                "section_id": 15,
+                "section_image": "get-image/Output/Color_Contrast/section_15.png",
+                "text_color": [
+                    53,
+                    63,
+                    79
+                ],
+                "threshold": 4.5,
+                "type": "heading"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    220,
+                    226,
+                    234
+                ],
+                "contrast_ratio": 7.89538852923435,
+                "section_id": 16,
+                "section_image": "get-image/Output/Color_Contrast/section_16.png",
+                "text_color": [
+                    55,
+                    65,
+                    82
+                ],
+                "threshold": 4.5,
+                "type": "heading"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    217,
+                    212,
+                    211
+                ],
+                "contrast_ratio": 7.626996785354499,
+                "section_id": 17,
+                "section_image": "get-image/Output/Color_Contrast/section_17.png",
+                "text_color": [
+                    54,
+                    59,
+                    72
+                ],
+                "threshold": 4.5,
+                "type": "heading"
+            },
+            {
+                "accessibility": "PASS",
+                "background_color": [
+                    219,
+                    226,
+                    235
+                ],
+                "contrast_ratio": 7.77643862294251,
+                "section_id": 18,
+                "section_image": "get-image/Output/Color_Contrast/section_18.png",
+                "text_color": [
+                    57,
+                    66,
+                    80
+                ],
+                "threshold": 4.5,
+                "type": "heading"
+            }
+        ]
+    },
+    "font_sizes": {
+        "authors_1": {
+            "font_size": 19.79,
+            "img": "get-image/Memory/Raw Components/authors_1.jpg",
+            "max_size": 23,
+            "min_size": 18,
+            "text_count": 14,
+            "type": "authors"
+        },
+        "authors_2": {
+            "font_size": 13.43,
+            "img": "get-image/Memory/Raw Components/authors_2.jpg",
+            "max_size": 17,
+            "min_size": 4,
+            "text_count": 23,
+            "type": "authors"
+        },
+        "heading_2": {
+            "font_size": 16.0,
+            "img": "get-image/Memory/Raw Components/heading_2.jpg",
+            "max_size": 16,
+            "min_size": 16,
+            "text_count": 2,
+            "type": "heading"
+        },
+        "heading_3": {
+            "font_size": 16.0,
+            "img": "get-image/Memory/Raw Components/heading_3.jpg",
+            "max_size": 16,
+            "min_size": 16,
+            "text_count": 3,
+            "type": "heading"
+        },
+        "heading_4": {
+            "font_size": 16.5,
+            "img": "get-image/Memory/Raw Components/heading_4.jpg",
+            "max_size": 17,
+            "min_size": 16,
+            "text_count": 2,
+            "type": "heading"
+        },
+        "heading_5": {
+            "font_size": 21.0,
+            "img": "get-image/Memory/Raw Components/heading_5.jpg",
+            "max_size": 21,
+            "min_size": 21,
+            "text_count": 1,
+            "type": "heading"
+        },
+        "heading_6": {
+            "font_size": 20.0,
+            "img": "get-image/Memory/Raw Components/heading_6.jpg",
+            "max_size": 20,
+            "min_size": 20,
+            "text_count": 1,
+            "type": "heading"
+        },
+        "plain_text_1": {
+            "font_size": 13.45,
+            "img": "get-image/Memory/Raw Components/plain_text_1.jpg",
+            "max_size": 17,
+            "min_size": 10,
+            "text_count": 51,
+            "type": "plain_text"
+        },
+        "plain_text_2": {
+            "font_size": 13.64,
+            "img": "get-image/Memory/Raw Components/plain_text_2.jpg",
+            "max_size": 17,
+            "min_size": 9,
+            "text_count": 53,
+            "type": "plain_text"
+        },
+        "plain_text_3": {
+            "font_size": 12.32,
+            "img": "get-image/Memory/Raw Components/plain_text_3.jpg",
+            "max_size": 16,
+            "min_size": 4,
+            "text_count": 22,
+            "type": "plain_text"
+        },
+        "plain_text_4": {
+            "font_size": 13.65,
+            "img": "get-image/Memory/Raw Components/plain_text_4.jpg",
+            "max_size": 17,
+            "min_size": 5,
+            "text_count": 55,
+            "type": "plain_text"
+        },
+        "plain_text_5": {
+            "font_size": 13.74,
+            "img": "get-image/Memory/Raw Components/plain_text_5.jpg",
+            "max_size": 17,
+            "min_size": 10,
+            "text_count": 34,
+            "type": "plain_text"
+        },
+        "plain_text_6": {
+            "font_size": 12.48,
+            "img": "get-image/Memory/Raw Components/plain_text_6.jpg",
+            "max_size": 17,
+            "min_size": 2,
+            "text_count": 23,
+            "type": "plain_text"
+        },
+        "plain_text_7": {
+            "font_size": 13.63,
+            "img": "get-image/Memory/Raw Components/plain_text_7.jpg",
+            "max_size": 17,
+            "min_size": 6,
+            "text_count": 147,
+            "type": "plain_text"
+        },
+        "plain_text_8": {
+            "font_size": 13.21,
+            "img": "get-image/Memory/Raw Components/plain_text_8.jpg",
+            "max_size": 17,
+            "min_size": 10,
+            "text_count": 28,
+            "type": "plain_text"
+        }
+    },
+    "hyperlinks": {
+        "utexas.edu/nursing": "Valid"
+    },
+    "image_resolution": {
+        "DPI": 72,
+        "Resolution": "1598x1067"
+    },
+    "logo_evaluation": {
+        "logo_evaluation_summary": "get-image/Output/Logos/logos_annotated.png",
+        "logos": [
+            {
+                "label": "Simple",
+                "logo_1": "get-image/Output/Logos/logo_1.png"
+            },
+            {
+                "label": "Complex",
+                "logo_2": "get-image/Output/Logos/logo_2.png"
+            },
+            {
+                "label": "Simple",
+                "logo_3": "get-image/Output/Logos/logo_3.png"
+            }
+        ]
+    },
+    "poster_layout": "get-image/Output/extracted_components.png"
+}

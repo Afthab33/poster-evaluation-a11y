@@ -1,0 +1,204 @@
+@import "tailwindcss";
+
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* Base */
+  --radius: 0.625rem;
+  
+  /* Main colors - Light mode */
+  --background: oklch(0.99 0.01 180); /* Soft Background #F8FAFA */
+  --foreground: oklch(0.2 0.02 180); /* Rich Black #0D1C1B */
+  
+  /* Card and Popover - Light mode */
+  --card: oklch(1 0 0); /* Pure White #FFFFFF */
+  --card-foreground: oklch(0.2 0.02 180); /* Rich Black #0D1C1B */
+  --popover: oklch(1 0 0); /* Pure White #FFFFFF */
+  --popover-foreground: oklch(0.2 0.02 180); /* Rich Black #0D1C1B */
+  
+  /* Primary - Light mode */
+  --primary: oklch(0.48 0.12 180); /* Deep Teal #00635D */
+  --primary-foreground: oklch(1 0 0); /* Pure White #FFFFFF */
+  
+  /* Secondary - Light mode */
+  --secondary: oklch(0.74 0.14 80); /* Warm Amber #E29934 */
+  --secondary-foreground: oklch(0.2 0.02 180); /* Rich Black #0D1C1B */
+  
+  /* Accent - Light mode */
+  --accent: oklch(0.56 0.13 180); /* Teal Accent #00857C */
+  --accent-foreground: oklch(1 0 0); /* Pure White #FFFFFF */
+  
+  /* Muted - Light mode */
+  --muted: oklch(0.95 0.02 180); /* Lighter version of Soft Background */
+  --muted-foreground: oklch(0.45 0.06 180); /* Muted Teal Text */
+  
+  /* Destructive - Light mode */
+  --destructive: oklch(0.577 0.245 27.325); /* Red for errors/destructive actions */
+  
+  /* Border and Ring - Light mode */
+  --border: oklch(0.9 0.02 180); /* Light Teal Border */
+  --input: oklch(0.9 0.02 180); /* Same as border for consistency */
+  --ring: oklch(0.48 0.12 180); /* Deep Teal for focus rings #00635D */
+  
+  /* Chart Colors - Light mode */
+  --chart-1: oklch(0.48 0.12 180); /* Deep Teal #00635D */
+  --chart-2: oklch(0.74 0.14 80); /* Warm Amber #E29934 */
+  --chart-3: oklch(0.56 0.13 180); /* Teal Accent #00857C */
+  --chart-4: oklch(0.65 0.12 120); /* Orange-ish variant */
+  --chart-5: oklch(0.38 0.09 200); /* Darker blue-teal */
+  
+  /* Sidebar - Light mode */
+  --sidebar: oklch(0.48 0.12 180); /* Deep Teal #00635D */
+  --sidebar-foreground: oklch(1 0 0); /* Pure White #FFFFFF */
+  --sidebar-primary: oklch(0.74 0.14 80); /* Warm Amber #E29934 */
+  --sidebar-primary-foreground: oklch(0.2 0.02 180); /* Rich Black #0D1C1B */
+  --sidebar-accent: oklch(0.56 0.13 180); /* Teal Accent #00857C */
+  --sidebar-accent-foreground: oklch(1 0 0); /* Pure White #FFFFFF */
+  --sidebar-border: oklch(0.4 0.09 180); /* Darker Teal Border */
+  --sidebar-ring: oklch(0.74 0.14 80); /* Warm Amber for focus #E29934 */
+  
+  /* Add new hover state variables for better contrast */
+  --primary-hover: oklch(0.43 0.12 180); /* Slightly darker Deep Teal for hover */
+  --primary-hover-foreground: oklch(1 0 0); /* Ensure white text on hover */
+  
+  --secondary-hover: oklch(0.69 0.14 80); /* Slightly darker Amber for hover */
+  --secondary-hover-foreground: oklch(0.2 0.02 180); /* Maintain dark text on hover */
+  
+  --accent-hover: oklch(0.51 0.13 180); /* Slightly darker Teal Accent for hover */
+  --accent-hover-foreground: oklch(1 0 0); /* Ensure white text on hover */
+}
+
+.dark {
+  /* Main colors - Dark mode */
+  --background: oklch(0 0 0); /* Pure Black #000000 */
+  --foreground: oklch(0.95 0.01 180); /* Near White with teal hint */
+  
+  /* Card and Popover - Dark mode */
+  --card: oklch(0.15 0.02 180); /* Slightly lighter than pure black background */
+  --card-foreground: oklch(0.95 0.01 180); /* Near White with teal hint */
+  --popover: oklch(0.15 0.02 180); /* Same as card */
+  --popover-foreground: oklch(0.95 0.01 180); /* Near White with teal hint */
+  
+  /* Rest of the dark mode variables remain unchanged */
+  --primary: oklch(0.56 0.13 180); /* Teal Accent #00857C - brighter in dark mode */
+  --primary-foreground: oklch(1 0 0); /* Pure White #FFFFFF */
+  
+  --secondary: oklch(0.78 0.15 80); /* Brighter Amber in dark mode */
+  --secondary-foreground: oklch(0.2 0.02 180); /* Rich Black #0D1C1B */
+  
+  --accent: oklch(0.48 0.12 180); /* Deep Teal #00635D */
+  --accent-foreground: oklch(1 0 0); /* Pure White #FFFFFF */
+  
+  --muted: oklch(0.2 0.03 180); /* Adjusted muted dark to match black theme */
+  --muted-foreground: oklch(0.75 0.05 180); /* Lighter muted text */
+  
+  --destructive: oklch(0.704 0.191 22.216); /* Brighter red for dark mode */
+  
+  --border: oklch(0.3 0.05 180 / 30%); /* Adjusted semi-transparent border */
+  --input: oklch(0.3 0.05 180 / 30%); /* Same as border */
+  --ring: oklch(0.56 0.13 180); /* Teal Accent #00857C for focus */
+  
+  /* Chart Colors - Dark mode */
+  --chart-1: oklch(0.60 0.15 180); /* Brighter teal for visibility */
+  --chart-2: oklch(0.78 0.15 80); /* Brighter amber */
+  --chart-3: oklch(0.65 0.12 120); /* Orange-ish variant */
+  --chart-4: oklch(0.7 0.15 200); /* Blue-teal */
+  --chart-5: oklch(0.65 0.2 40); /* Warm red-orange */
+  
+  /* Sidebar - Dark mode */
+  --sidebar: oklch(0.1 0.01 180); /* Almost black background */
+  --sidebar-foreground: oklch(0.95 0.01 180); /* Near White with teal hint */
+  --sidebar-primary: oklch(0.56 0.13 180); /* Teal Accent #00857C */
+  --sidebar-primary-foreground: oklch(1 0 0); /* Pure White #FFFFFF */
+  --sidebar-accent: oklch(0.78 0.15 80); /* Brighter Amber */
+  --sidebar-accent-foreground: oklch(0.2 0.02 180); /* Rich Black #0D1C1B */
+  --sidebar-border: oklch(0.3 0.05 180 / 30%); /* Adjusted semi-transparent border */
+  --sidebar-ring: oklch(0.78 0.15 80); /* Brighter Amber */
+  
+  /* Ensure better contrast in dark mode */
+  --primary-hover: oklch(0.61 0.13 180); /* Brighter Teal on hover in dark mode */
+  --primary-hover-foreground: oklch(1 0 0); /* Pure white text */
+  
+  --secondary-hover: oklch(0.83 0.15 80); /* Brighter Amber on hover */
+  --secondary-hover-foreground: oklch(0.1 0.01 180); /* Darker text for contrast */
+  
+  --accent-hover: oklch(0.53 0.12 180); /* Brighter accent on hover */
+  --accent-hover-foreground: oklch(1 0 0); /* Pure white text */
+  
+  /* Fix teal text in dark mode to be white for better contrast */
+  --primary-text: oklch(1 0 0); /* Pure white for any primary text in dark mode */
+  --muted-foreground: oklch(0.85 0.03 180); /* Lighter muted text for better contrast */
+  --link-text: oklch(0.85 0.10 180); /* Lighter teal for links to meet contrast standards */
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Ensure text is white on primary button hover */
+  .btn-primary:hover, 
+  .btn-accent:hover,
+  button[data-variant="primary"]:hover,
+  button[data-variant="accent"]:hover {
+    color: var(--primary-hover-foreground) !important;
+    background-color: var(--primary-hover) !important;
+  }
+  
+  /* Fix text contrast in dark mode */
+  .dark .text-primary,
+  .dark .text-accent {
+    color: var(--primary-text);
+  }
+  
+  /* Fix links in dark mode */
+  .dark a:not(.btn),
+  .dark button[data-variant="link"] {
+    color: var(--link-text);
+  }
+}

@@ -1,0 +1,158 @@
+I'll create a style guide that you can use when prompting your copilot to ensure it follows your custom color scheme and component design standards.
+
+# Style Guide: Deep Teal & Warm Amber UI System
+
+## Color System
+
+### Primary Colors
+- **Deep Teal** (`#00635D`) - Main brand color for headers, navigation bars, and primary UI elements
+- **Warm Amber** (`#E29934`) - Call-to-action buttons, highlights, and important interactive elements
+- **Pure White** (`#FFFFFF`) - Card backgrounds and text on dark surfaces
+- **Rich Black** (`#0D1C1B`) - Main content text with slight teal tint for brand cohesion
+- **Teal Accent** (`#00857C`) - Secondary actions, links, and hover states
+- **Soft Background** (`#F8FAFA`) - Page backgrounds with subtle teal tint
+
+### Semantic Color Usage
+- Page backgrounds: `bg-background`
+- Content text: `text-foreground`
+- Primary elements: `bg-primary text-primary-foreground`
+- Call-to-action elements: `bg-secondary text-secondary-foreground`
+- Secondary actions: `bg-accent text-accent-foreground`
+- Subtle backgrounds: `bg-muted text-muted-foreground`
+- Cards and modules: `bg-card text-card-foreground`
+- Popover elements: `bg-popover text-popover-foreground`
+- Error states: `text-destructive` or `bg-destructive/10 text-destructive`
+- Borders and outlines: `border-border`
+- Focus states: `ring-ring`
+
+## Components
+
+### Buttons
+```jsx
+// Primary button (Amber colored)
+<Button variant="primary">Primary Action</Button>
+
+// Secondary button (Teal Accent colored)
+<Button variant="secondary">Secondary Action</Button>
+
+// Outline button (Amber outline with transparent background)
+<Button variant="outline">Outline Button</Button>
+
+// Ghost button (Transparent with hover effect)
+<Button variant="ghost">Ghost Button</Button>
+```
+
+### Cards
+```jsx
+// Standard card
+<Card>
+  <CardHeader>Card Title</CardHeader>
+  <CardBody>Card content goes here...</CardBody>
+  <CardFooter>
+    <Button>Action</Button>
+  </CardFooter>
+</Card>
+
+// Highlight card (Amber background)
+<Card highlight={true}>
+  <CardHeader>Highlighted Card</CardHeader>
+  <CardBody>Important content...</CardBody>
+  <CardFooter>
+    <Button className="bg-white text-secondary">Action</Button>
+  </CardFooter>
+</Card>
+```
+
+### Alerts
+```jsx
+// Primary alert (Teal)
+<Alert variant="primary">
+  <AlertTitle>Information</AlertTitle>
+  <AlertContent>This is an informational message.</AlertContent>
+</Alert>
+
+// Secondary alert (Amber)
+<Alert variant="secondary">
+  <AlertTitle>Warning</AlertTitle>
+  <AlertContent>This is a warning message.</AlertContent>
+</Alert>
+
+// Destructive alert (Red)
+<Alert variant="destructive">
+  <AlertTitle>Error</AlertTitle>
+  <AlertContent>This is an error message.</AlertContent>
+</Alert>
+```
+
+### Navigation
+```jsx
+<header className="bg-primary text-primary-foreground py-5 px-7">
+  <div className="flex justify-between items-center">
+    <div className="text-2xl font-bold">Brand Name</div>
+    <nav className="flex gap-6">
+      <div className="relative after:content-[''] after:absolute after:bottom-[-5px] after:left-0 after:right-0 after:h-[3px] after:bg-secondary after:rounded-sm">Active Item</div>
+      <div>Item Two</div>
+      <div>Item Three</div>
+    </nav>
+  </div>
+</header>
+```
+
+## Typography
+
+### Headings
+- Page titles: `text-3xl font-bold text-primary`
+- Section headings: `text-2xl font-semibold text-foreground`
+- Card headers: `text-xl font-semibold text-card-foreground`
+- Subheadings: `text-lg font-medium text-foreground`
+
+### Body Text
+- Main content: `text-base text-foreground`
+- Secondary text: `text-sm text-muted-foreground`
+- Small text/captions: `text-xs text-muted-foreground`
+
+## Interactive Elements
+
+### Hover Effects
+- Button hover: `hover:shadow-md hover:-translate-y-0.5 transition-all duration-200`
+- Card hover: `hover:shadow-md hover:-translate-y-1 transition-all duration-200`
+- Link hover: `hover:underline hover:text-primary transition-colors`
+
+### Focus States
+- Focus visible: `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`
+
+## Form Elements
+```jsx
+<div className="space-y-4">
+  <div>
+    <label className="block font-medium mb-2">Input Label</label>
+    <input className="w-full px-4 py-3 rounded-lg border border-input focus:outline-none focus:ring-2 focus:ring-ring" />
+  </div>
+  
+  <div>
+    <label className="block font-medium mb-2">Select Label</label>
+    <select className="w-full px-4 py-3 rounded-lg border border-input focus:outline-none focus:ring-2 focus:ring-ring">
+      <option>Option 1</option>
+      <option>Option 2</option>
+    </select>
+  </div>
+</div>
+```
+
+## Layout Guidelines
+
+### Container Widths
+- Full-width container: `container mx-auto px-4`
+- Content container: `max-w-screen-xl mx-auto px-4`
+- Narrow container: `max-w-screen-md mx-auto px-4`
+
+### Spacing
+- Section spacing: `py-12 md:py-16`
+- Content spacing: `space-y-6`
+- Component spacing: `gap-6`
+
+## Accessibility Considerations
+- Ensure text contrast meets WCAG 2.1 AA standards (4.5:1 for normal text)
+- Utilize semantic HTML elements (headings, buttons, etc.)
+- Include appropriate aria attributes for custom components
+- Support keyboard navigation and focus states
