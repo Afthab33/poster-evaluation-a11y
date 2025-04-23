@@ -26,7 +26,7 @@ RUN mkdir -p utils/Input utils/Memory/Raw\ Components utils/Output utils/Output/
     utils/Output/Color_Contrast utils/Buffer utils/Buffer/components utils/Models
 
 # Set environment variables
-ENV PORT=5000
+ENV PORT=8080
 
 # Run with Gunicorn instead of Flask development server
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "120", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--timeout", "120", "app:app"]
