@@ -14,11 +14,7 @@ export function ThemeProvider({ children }) {
     // Check for stored preference
     const savedTheme = localStorage.getItem('theme');
     
-    // Check for system preference if no saved preference
-    if (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
-    
+    // Always default to 'light' if no saved preference exists
     return savedTheme || 'light';
   });
 
