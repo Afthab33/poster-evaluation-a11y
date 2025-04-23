@@ -14,7 +14,9 @@ import gc
 app = Flask(__name__)
 # Add ProxyFix middleware to handle forwarded headers
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
-CORS(app)
+
+# Update CORS configuration to explicitly allow your frontend origin
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "https://poster-a11y.vercel.app"]}})
 
 # Add this before your routes
 @app.before_request
