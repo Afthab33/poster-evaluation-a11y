@@ -68,7 +68,7 @@ export function Navbar() {
           </NavigationMenu>
         </div>
 
-        <div className="flex items-center space-x-4">
+        {/* <div className="flex items-center space-x-4">
           {mounted && (
             <Button
               variant="ghost"
@@ -142,7 +142,7 @@ export function Navbar() {
               </nav>
             </SheetContent>
           </Sheet>
-        </div>
+        </div> */}
       </div>
     </header>
   );

@@ -82,7 +82,7 @@ export function Footer() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button 
+                {/* <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} 
@@ -108,7 +108,7 @@ export function Footer() {
                       )}
                     </motion.div>
                   </AnimatePresence>
-                </Button>
+                </Button> */}
               </motion.div>
             </div>
           </motion.div>
