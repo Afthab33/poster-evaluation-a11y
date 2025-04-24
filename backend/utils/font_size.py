@@ -72,7 +72,7 @@ def check_text_font_sizes(poster_path: str) -> dict:
                 component_name = file.replace('.jpg', '')
                 font_sizes[component_name] = {
                     **font_info,
-                    "img": f"get-image/Memory/Raw Components/{file}",
+                    "img": f"Memory/Raw Components/{file}",
                     "type": component_type
                 }
     return font_sizes

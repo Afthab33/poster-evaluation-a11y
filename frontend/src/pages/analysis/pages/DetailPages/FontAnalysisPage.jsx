@@ -302,22 +302,20 @@ export default function FontAnalysisPage() {
                     {/* Font Sample Image */}
                     <div className="bg-white p-6 rounded-lg shadow-sm border border-border">
                       <figure className="flex flex-col items-center">
-                        {currentFont.img ? (
-                          <img 
-                            src={currentFont.img} 
-                            alt={`Font sample for ${currentKey}`}
-                            className="max-w-full max-h-[300px] object-contain rounded-md"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = '/placeholder.png';
-                              e.target.alt = 'Image not available';
-                            }}
-                          />
-                        ) : (
-                          <div className="w-full h-[200px] flex items-center justify-center bg-muted/30 rounded-md">
-                            <p className="text-muted-foreground">No image available</p>
-                          </div>
-                        )}
+                        <img 
+                          src={
+                            currentFont.img
+                              ? `${import.meta.env.VITE_API_URL}/get-image/${encodeURIComponent(currentFont.img)}`
+                              : '/placeholder.png'
+                          }
+                          alt={`Font sample for ${currentKey}`}
+                          className="max-w-full max-h-[300px] object-contain rounded-md"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = '/placeholder.png';
+                            e.target.alt = 'Image not available';
+                          }}
+                        />
                         <figcaption className="mt-4 text-sm text-muted-foreground">
                           {currentKey && currentKey.replace(/_/g, ' ')}
                         </figcaption>
