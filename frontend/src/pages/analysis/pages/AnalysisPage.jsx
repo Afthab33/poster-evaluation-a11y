@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../../providers/ThemeProvider";
 import Navbar from "@/components/Navbar";
@@ -29,7 +29,9 @@ import {
   Download,
   HelpCircle,
   BookOpen,
-  ExternalLink
+  ExternalLink,
+  ZoomIn,
+  X
 } from "lucide-react";
 
 // Import hooks and utilities
@@ -51,6 +53,9 @@ export default function AnalysisPage() {
   
   // Calculate all metrics based on analysis data
   const metrics = calculateAllMetrics(analysisData);
+  
+  // State for image zoom modal
+  const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
 
   // Loading state
   if (loading) {
@@ -204,65 +209,65 @@ export default function AnalysisPage() {
           </div>
           
           {/* Summary cards - similar to old HTML summary section */}
-          <Card className="mb-6 bg-primary/5 border-primary/20">
+          <Card className="mb-6 bg-[#E29934] border-[#E29934]/20 text-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xl text-primary flex items-center gap-2">
+              <CardTitle className="text-xl text-black flex items-center gap-2">
                 <PieChart className="h-5 w-5" />
                 Accessibility Summary
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white rounded-md p-4 shadow-sm">
+                <div className="bg-primary backdrop-blur-sm rounded-md p-4 shadow-sm">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
-                      <Contrast className="h-5 w-5 text-primary" />
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
+                      <Contrast className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Color Contrast</div>
-                      <div className="font-bold">
+                      <div className="text-sm text-white/80">Color Contrast</div>
+                      <div className="font-bold text-white">
                         {contrastPassing ? `${contrastPassingCount}/${contrastTotalCount} Passing` : 'No data'}
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="bg-white rounded-md p-4 shadow-sm">
+                <div className="bg-primary backdrop-blur-sm rounded-md p-4 shadow-sm">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
-                      <Type className="h-5 w-5 text-primary" />
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
+                      <Type className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Font Sizes</div>
-                      <div className="font-bold">
+                      <div className="text-sm text-white/80">Font Sizes</div>
+                      <div className="font-bold text-white">
                         {fontSizesExist ? `${accessibleFontsPercentage}% Accessible` : 'No data'}
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="bg-white rounded-md p-4 shadow-sm">
+                <div className="bg-primary backdrop-blur-sm rounded-md p-4 shadow-sm">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
-                      <ImageIcon className="h-5 w-5 text-primary" />
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
+                      <ImageIcon className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Logo Accessibility</div>
-                      <div className="font-bold">
+                      <div className="text-sm text-white/80">Logo Accessibility</div>
+                      <div className="font-bold text-white">
                         {simpleLogos ? `${simpleLogoCount}/${logoTotalCount} Simple` : 'No data'}
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="bg-white rounded-md p-4 shadow-sm">
+                <div className="bg-primary backdrop-blur-sm rounded-md p-4 shadow-sm">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
-                      <Maximize className="h-5 w-5 text-primary" />
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
+                      <Maximize className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Image Resolution</div>
-                      <div className="font-bold">
+                      <div className="text-sm text-white/80">Image Resolution</div>
+                      <div className="font-bold text-white">
                         {hasResolution ? (goodResolution ? 'Sufficient' : 'Too Low') : 'No data'}
                       </div>
                     </div>
@@ -296,11 +301,19 @@ export default function AnalysisPage() {
                       <CardContent className="pt-6">
                         <AspectRatio ratio={3/4} className="bg-muted rounded-md overflow-hidden">
                           {analysisData?.poster_layout ? (
-                            <img 
-                              src={analysisData.poster_layout} 
-                              alt="Poster components breakdown showing different elements like text, images, and logos"
-                              className="object-contain w-full h-full"
-                            />
+                            <div 
+                              className="relative w-full h-full cursor-zoom-in"
+                              onClick={() => setIsZoomModalOpen(true)}
+                            >
+                              <img 
+                                src={analysisData.poster_layout} 
+                                alt="Poster components breakdown showing different elements like text, images, and logos"
+                                className="object-contain w-full h-full"
+                              />
+                              <div className="absolute bottom-2 right-2 bg-black/60 text-white rounded-full p-1.5">
+                                <ZoomIn className="h-4 w-4" />
+                              </div>
+                            </div>
                           ) : (
                             <div className="flex items-center justify-center h-full bg-muted">
                               <p className="text-muted-foreground">No layout data available</p>
@@ -665,19 +678,6 @@ export default function AnalysisPage() {
                     <div className="text-sm text-muted-foreground">
                       Click any card above for detailed analysis
                     </div>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="outline" onClick={() => window.print()} className="flex items-center gap-2">
-                            <Download className="h-4 w-4" />
-                            Generate Report
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Download a PDF report with all analysis details</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
                   </div>
                 </div>
               </div>
@@ -687,6 +687,41 @@ export default function AnalysisPage() {
       </main>
       
       <Footer />
+      
+      {/* Image Zoom Modal */}
+      {isZoomModalOpen && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-6xl max-h-[90vh] bg-white rounded-lg overflow-hidden">
+            <div className="absolute top-4 right-4 z-10">
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="bg-white/90 rounded-full h-10 w-10 shadow-lg hover:bg-white"
+                onClick={() => setIsZoomModalOpen(false)}
+                aria-label="Close full screen view"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            
+            <div className="h-[calc(90vh-8rem)] overflow-auto p-6 flex items-center justify-center">
+              {analysisData?.poster_layout && (
+                <img 
+                  src={analysisData.poster_layout} 
+                  alt="Full-size poster components breakdown"
+                  className="max-w-full max-h-full object-contain"
+                />
+              )}
+            </div>
+            
+            <div className="bg-white p-4 border-t border-border">
+              <div className="text-sm text-muted-foreground">
+                <p>This zoomed view allows you to examine poster components in detail. Use pinch-to-zoom on mobile or scroll to zoom on desktop.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

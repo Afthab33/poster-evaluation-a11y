@@ -2,47 +2,38 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import MetricsSidebar from "@/components/MetricsSidebar";
 import { 
   Card, 
   CardContent, 
   CardHeader, 
-  CardTitle,
-  CardDescription,
-  CardFooter
+  CardTitle
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowLeft,
-  Type,
+  ArrowRight,
+  Check,
+  X,
   CheckCircle,
   XCircle,
-  AlertTriangle,
-  Info,
-  ExternalLink,
-  ChevronRight,
-  ChevronLeft,
-  Contrast,
-  ImageIcon,
-  LinkIcon,
-  Maximize,
-  Users,
-  Table2
+  AlertTriangle
 } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function FontAnalysisPage() {
   const navigate = useNavigate();
-  const [fontData, setFontData] = useState([]);
+  const MIN_ACCESSIBLE_FONT = 14.0;
+  
+  const [fontData, setFontData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeView, setActiveView] = useState("overview");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [keys, setKeys] = useState([]);
 
-  // Load font data from session storage
+  // Load font data from sessionStorage
   useEffect(() => {
     try {
       setLoading(true);
@@ -56,116 +47,97 @@ export default function FontAnalysisPage() {
 
       const analysisData = JSON.parse(analysisDataStr);
       
-      // Fix: Looking for font_sizes instead of font_analysis
       if (!analysisData.font_sizes || Object.keys(analysisData.font_sizes).length === 0) {
         setError("No font analysis data was found in the results.");
         setLoading(false);
         return;
       }
       
-      // Convert the font_sizes object to an array of font objects
-      const fontArray = Object.entries(analysisData.font_sizes).map(([key, value]) => {
-        // Determine if this is a heading, body text, etc.
-        const elementType = value.type === 'heading' || value.type === 'title' ? 
-          'heading' : (value.type === 'plain_text' || value.type === 'caption' ? 'body' : value.type);
-        
-        return {
-          id: key,
-          element_type: elementType,
-          size: value.font_size || 0,
-          min_size: value.min_size || 0,
-          max_size: value.max_size || 0,
-          text_count: value.text_count || 0,
-          image_path: value.img || null,
-          sample_text: key.replace(/_/g, ' '),
-          type: value.type
-        };
-      });
-      
-      // Sort by element type then by size (descending)
-      fontArray.sort((a, b) => {
-        if (a.element_type === b.element_type) {
-          return b.size - a.size; // Descending size
-        }
-        // Headings first, then body text, then others
-        if (a.element_type === 'heading') return -1;
-        if (b.element_type === 'heading') return 1;
-        if (a.element_type === 'body') return -1;
-        if (b.element_type === 'body') return 1;
-        return 0;
-      });
-      
-      setFontData(fontArray);
+      setFontData(analysisData.font_sizes);
+      setKeys(Object.keys(analysisData.font_sizes));
+      setLoading(false);
     } catch (error) {
       console.error('Error processing font analysis data:', error);
       setError("Error processing font analysis data. Please try again.");
-    } finally {
       setLoading(false);
     }
   }, []);
 
-  // Calculate statistics
-  const calculateStats = () => {
-    if (!fontData || !fontData.length) {
-      return { 
-        totalFonts: 0, 
-        accessibleFonts: 0, 
-        averageSize: 0,
-        headingsCount: 0,
-        bodyCount: 0,
-        accessibleHeadings: 0,
-        accessibleBody: 0,
-        accessiblePercentage: 0
-      };
+  // Check if font is accessible
+  const isAccessible = (fontSize) => {
+    return Number(fontSize) >= MIN_ACCESSIBLE_FONT;
+  };
+
+  // Navigate to previous section
+  const goToPrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
     }
-
-    const totalFonts = fontData.length;
-    
-    let headingsCount = 0;
-    let bodyCount = 0;
-    let accessibleHeadings = 0;
-    let accessibleBody = 0;
-    
-    fontData.forEach(font => {
-      if (font.element_type === 'heading') {
-        headingsCount++;
-        if (font.size >= 16) accessibleHeadings++;
-      } else if (font.element_type === 'body') {
-        bodyCount++;
-        if (font.size >= 12) accessibleBody++;
-      }
-    });
-    
-    const accessibleFonts = accessibleHeadings + accessibleBody;
-    const accessiblePercentage = Math.round((accessibleFonts / totalFonts) * 100);
-    
-    const totalSize = fontData.reduce((sum, font) => sum + font.size, 0);
-    const averageSize = totalFonts > 0 ? Math.round(totalSize / totalFonts * 10) / 10 : 0;
-
-    return { 
-      totalFonts, 
-      accessibleFonts, 
-      averageSize,
-      headingsCount,
-      bodyCount,
-      accessibleHeadings,
-      accessibleBody,
-      accessiblePercentage
-    };
   };
 
-  const stats = calculateStats();
-
-  // Check if a font is accessible
-  const isAccessible = (font) => {
-    return (font.element_type === 'heading' && font.size >= 16) || 
-           (font.element_type === 'body' && font.size >= 12) ||
-           (font.element_type === 'authors' && font.size >= 12);
+  // Navigate to next section
+  const goToNext = () => {
+    if (currentIndex < keys.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
   };
 
-  // Navigate to different analysis pages
-  const navigateToPage = (page) => {
-    navigate(`/analysis/${page}`);
+  // Create feedback content based on accessibility
+  const createFeedback = (fontSize, isAccessible) => {
+    if (isAccessible) {
+      return (
+        <div className="bg-green-500/10 border-l-4 border-l-green-500 p-4 rounded-md mt-4">
+          <h4 className="flex items-center gap-2 font-medium text-foreground mb-3">
+            <CheckCircle className="h-5 w-5 text-green-500" />
+            Why this font size is accessible
+          </h4>
+          <ul className="list-disc pl-5 text-muted-foreground space-y-2">
+            <li>The font size ({fontSize.toFixed(2)}pt) exceeds the minimum of {MIN_ACCESSIBLE_FONT}pt</li>
+            <li>Improves readability and reduces eye strain</li>
+            <li>Supports users with mild visual impairments</li>
+          </ul>
+        </div>
+      );
+    } else {
+      return (
+        <div className="bg-destructive/10 border-l-4 border-l-destructive p-4 rounded-md mt-4">
+          <h4 className="flex items-center gap-2 font-medium text-foreground mb-3">
+            <AlertTriangle className="h-5 w-5 text-destructive" />
+            Why this font size needs improvement
+          </h4>
+          <ul className="list-disc pl-5 text-muted-foreground space-y-2">
+            <li>Current size ({fontSize.toFixed(2)}pt) is {(MIN_ACCESSIBLE_FONT - fontSize).toFixed(1)}pt too small</li>
+            <li>Small text is hard to read for many users</li>
+            <li>Suggestions:
+              <ul className="list-disc pl-5 mt-2 space-y-1">
+                <li>Increase to at least {MIN_ACCESSIBLE_FONT}pt</li>
+                <li>Consider stronger font weight</li>
+                <li>Ensure good contrast</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      );
+    }
+  };
+
+  // Render status badge
+  const renderStatusBadge = (isAccessible) => {
+    if (isAccessible) {
+      return (
+        <Badge className="bg-secondary text-white flex items-center gap-1">
+          <Check className="h-3.5 w-3.5" />
+          Accessible
+        </Badge>
+      );
+    } else {
+      return (
+        <Badge variant="destructive" className="flex items-center gap-1">
+          <X className="h-3.5 w-3.5" />
+          Too Small
+        </Badge>
+      );
+    }
   };
 
   // Loading state
@@ -174,434 +146,212 @@ export default function FontAnalysisPage() {
       <div className="min-h-screen bg-background flex flex-col">
         <Navbar />
         <main className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full inline-block mb-4"></div>
-            <p className="text-muted-foreground">Loading font analysis...</p>
-          </div>
+          <Card className="max-w-md w-full">
+            <CardContent className="py-12">
+              <div className="text-center">
+                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Loading font analysis...</p>
+              </div>
+            </CardContent>
+          </Card>
         </main>
         <Footer />
       </div>
     );
   }
 
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center p-4">
+          <Card className="max-w-md w-full">
+            <CardContent className="py-12">
+              <div className="text-center">
+                <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+                <h2 className="text-xl font-semibold text-foreground mb-2">Error Loading Analysis</h2>
+                <p className="text-muted-foreground mb-6">{error}</p>
+                <Button onClick={() => navigate("/analysis")}>
+                  Return to Analysis
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Get current font data
+  const currentKey = keys[currentIndex];
+  const currentFont = fontData[currentKey] || {};
+  const currentFontSize = Number(currentFont.font_size) || 0;
+  const currentFontAccessible = isAccessible(currentFontSize);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       
-      {/* Add the metrics sidebar for vertical navigation */}
-      <MetricsSidebar />
-      
-      <main className="flex-1 py-8">
-        <div className="container mx-auto px-4 pl-[60px]">
-          {/* Top navigation bar with metrics dropdown */}
-          <div className="mb-6 flex items-center justify-between">
-            <Button 
-              variant="ghost" 
-              className="-ml-4 flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
-              onClick={() => navigate("/analysis")}
-              aria-label="Return to analysis page"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Analysis
-            </Button>
-            
-            {/* Metrics navigation dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Type className="h-4 w-4 text-primary" />
-                  <span>Switch Metric</span>
-                  <ChevronDown className="h-4 w-4 ml-1" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem onClick={() => navigateToPage("contrast")}>
-                  <Contrast className="h-4 w-4 mr-2 text-primary" />
-                  <span>Color Contrast</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigateToPage("logo")}>
-                  <ImageIcon className="h-4 w-4 mr-2 text-primary" />
-                  <span>Logo Analysis</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigateToPage("hyperlinks")}>
-                  <LinkIcon className="h-4 w-4 mr-2 text-primary" />
-                  <span>Hyperlinks</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigateToPage("resolution")}>
-                  <Maximize className="h-4 w-4 mr-2 text-primary" />
-                  <span>Resolution</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigateToPage("authors")}>
-                  <Users className="h-4 w-4 mr-2 text-primary" />
-                  <span>Authors</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem disabled>
-                  <Type className="h-4 w-4 mr-2 text-primary" />
-                  <span>Font Analysis</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigateToPage("tables")}>
-                  <Table2 className="h-4 w-4 mr-2 text-primary" />
-                  <span>Tables</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigateToPage("diagram")}>
-                  <BarChart2 className="h-4 w-4 mr-2 text-primary" />
-                  <span>Diagrams</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+      <main className="flex-1">
+        <div className="container mx-auto px-4 py-10">
+          <Button 
+            variant="ghost" 
+            className="text-primary hover:bg-primary hover:text-primary-foreground transition-all hover:-translate-x-1 mb-8"
+            onClick={() => navigate("/analysis")}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Analysis
+          </Button>
           
-          <Card className="mb-8">
-            <CardHeader className="border-b border-border pb-6">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Type className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-2xl font-bold text-primary">
-                      Font Size Analysis
-                    </CardTitle>
-                    <CardDescription>
-                      Evaluating text size and readability for accessibility
-                    </CardDescription>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  <div className="text-center px-4 py-2 bg-muted rounded-md">
-                    <div className="text-xs text-muted-foreground">Score</div>
-                    <div className="text-lg font-bold text-secondary">
-                      {stats.accessiblePercentage}%
-                    </div>
-                  </div>
-                  
-                  <div className="text-center px-4 py-2 bg-muted rounded-md">
-                    <div className="text-xs text-muted-foreground">Accessible</div>
-                    <div className="text-lg font-bold text-secondary">
-                      {stats.accessibleFonts}/{stats.totalFonts}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-6">
-              {error ? (
-                <Alert variant="destructive">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              ) : (
-                <div className="space-y-6">
-                  {/* Summary Panel */}
-                  <div className="bg-primary/5 rounded-lg p-6 border border-primary/20">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-foreground">
-                        Font Accessibility: {stats.accessibleFonts} of {stats.totalFonts} fonts meet size standards
-                      </h3>
-                    </div>
-                    
-                    {stats.accessiblePercentage >= 90 ? (
-                      <Alert className="bg-secondary/10 border-secondary">
-                        <CheckCircle className="h-4 w-4" />
-                        <AlertTitle>Excellent Font Sizes</AlertTitle>
-                        <AlertDescription className="mt-2">
-                          Nearly all text in your poster uses font sizes that meet accessibility standards. This ensures good readability for viewers with visual impairments.
-                        </AlertDescription>
-                      </Alert>
-                    ) : stats.accessiblePercentage >= 70 ? (
-                      <Alert className="bg-amber-500/10 border-amber-500">
-                        <AlertTriangle className="h-4 w-4 text-amber-500" />
-                        <AlertTitle>Mostly Accessible Font Sizes</AlertTitle>
-                        <AlertDescription className="mt-2">
-                          Most of your text uses accessible font sizes, but some elements might be difficult to read for viewers with visual impairments. Consider increasing the size of smaller text.
-                        </AlertDescription>
-                      </Alert>
-                    ) : (
-                      <Alert className="bg-destructive/10 border-destructive">
-                        <AlertTriangle className="h-4 w-4" />
-                        <AlertTitle>Font Size Concerns</AlertTitle>
-                        <AlertDescription className="mt-2">
-                          Many text elements in your poster use font sizes that are too small for optimal accessibility. Consider increasing these sizes to improve readability.
-                        </AlertDescription>
-                      </Alert>
-                    )}
-                  </div>
-                  
-                  {/* Stats cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <Card>
-                      <CardContent className="pt-6 p-4">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Type className="h-5 w-5 text-primary" />
-                          </div>
-                          <div>
-                            <div className="text-sm text-muted-foreground">Total Font Elements</div>
-                            <div className="text-xl font-bold">{stats.totalFonts}</div>
-                          </div>
-                        </div>
-                        <div className="h-2 w-full bg-muted rounded-full">
-                          <div className="h-2 bg-primary rounded-full" style={{ width: "100%" }}></div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card>
-                      <CardContent className="pt-6 p-4">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="h-9 w-9 rounded-full bg-green-500/10 flex items-center justify-center">
-                            <CheckCircle className="h-5 w-5 text-green-500" />
-                          </div>
-                          <div>
-                            <div className="text-sm text-muted-foreground">Accessible Fonts</div>
-                            <div className="text-xl font-bold">{stats.accessibleFonts}</div>
-                          </div>
-                        </div>
-                        <div className="h-2 w-full bg-muted rounded-full">
-                          <div className="h-2 bg-secondary rounded-full" style={{ width: `${stats.accessiblePercentage}%` }}></div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card>
-                      <CardContent className="pt-6 p-4">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Type className="h-5 w-5 text-primary" />
-                          </div>
-                          <div>
-                            <div className="text-sm text-muted-foreground">Headings</div>
-                            <div className="text-xl font-bold">{stats.accessibleHeadings}/{stats.headingsCount}</div>
-                          </div>
-                        </div>
-                        <div className="h-2 w-full bg-muted rounded-full">
-                          <div 
-                            className="h-2 bg-primary rounded-full" 
-                            style={{ width: stats.headingsCount > 0 ? `${(stats.accessibleHeadings / stats.headingsCount) * 100}%` : "0%" }}
-                          ></div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card>
-                      <CardContent className="pt-6 p-4">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Type className="h-5 w-5 text-primary" />
-                          </div>
-                          <div>
-                            <div className="text-sm text-muted-foreground">Body Text</div>
-                            <div className="text-xl font-bold">{stats.accessibleBody}/{stats.bodyCount}</div>
-                          </div>
-                        </div>
-                        <div className="h-2 w-full bg-muted rounded-full">
-                          <div 
-                            className="h-2 bg-primary rounded-full" 
-                            style={{ width: stats.bodyCount > 0 ? `${(stats.accessibleBody / stats.bodyCount) * 100}%` : "0%" }}
-                          ></div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                  
-                  {/* Font table */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Type className="h-5 w-5 text-primary" />
-                        All Font Elements
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="rounded-md border">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Element Type</TableHead>
-                              <TableHead>Font Size (pt)</TableHead>
-                              <TableHead>Type</TableHead>
-                              <TableHead>Status</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {fontData.map((font, index) => {
-                              const accessible = isAccessible(font);
-                              return (
-                                <TableRow key={index} className="hover:bg-muted/40">
-                                  <TableCell className="font-medium">
-                                    {font.id.replace(/_/g, ' ')}
-                                  </TableCell>
-                                  <TableCell>
-                                    <span className={`font-medium ${!accessible ? 'text-destructive' : ''}`}>
-                                      {font.size.toFixed(1)}pt
-                                    </span>
-                                  </TableCell>
-                                  <TableCell>
-                                    <Badge variant="outline" className="bg-primary/5 text-primary">
-                                      {font.type}
-                                    </Badge>
-                                  </TableCell>
-                                  <TableCell>
-                                    {accessible ? (
-                                      <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500 flex items-center gap-1">
-                                        <CheckCircle className="h-3.5 w-3.5" />
-                                        Pass
-                                      </Badge>
-                                    ) : (
-                                      <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive flex items-center gap-1">
-                                        <XCircle className="h-3.5 w-3.5" />
-                                        Too Small
-                                      </Badge>
-                                    )}
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            })}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* WCAG guidelines section */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Info className="h-5 w-5 text-primary" />
-                        Font Size Accessibility Guidelines
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <p className="text-muted-foreground">
-                        The Web Content Accessibility Guidelines (WCAG) recommend the following for font sizes:
-                      </p>
+          <h1 className="text-3xl md:text-4xl font-bold text-primary text-center mb-10">
+            Font Accessibility Evaluation
+          </h1>
+          
+          <Tabs 
+            value={activeView} 
+            onValueChange={setActiveView} 
+            className="w-full max-w-3xl mx-auto mb-8"
+          >
+            <TabsList className="grid grid-cols-2 w-full">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="depth">In-Depth Analysis</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
+          {activeView === "overview" ? (
+            <Card className="mb-10">
+              <CardHeader>
+                <CardTitle className="text-2xl text-primary">Overview</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Section</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Font Size</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {keys.map((key) => {
+                      const data = fontData[key];
+                      const fontSize = Number(data.font_size) || 0;
+                      const accessible = isAccessible(fontSize);
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-3">
-                          <h4 className="font-medium">Minimum Sizes</h4>
-                          <ul className="space-y-2">
-                            <li className="flex items-start gap-2">
-                              <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                              <span>Body text: <strong>at least 12pt</strong></span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                              <span>Headings: <strong>at least 16pt</strong></span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                              <span>Captions: <strong>at least 10pt</strong></span>
-                            </li>
-                          </ul>
+                      return (
+                        <TableRow 
+                          key={key} 
+                          className="cursor-pointer hover:bg-muted/40"
+                          onClick={() => {
+                            setCurrentIndex(keys.indexOf(key));
+                            setActiveView("depth");
+                          }}
+                        >
+                          <TableCell className="font-medium">{key.replace(/_/g, ' ')}</TableCell>
+                          <TableCell>{data.type}</TableCell>
+                          <TableCell>{fontSize.toFixed(2)}pt</TableCell>
+                          <TableCell>{renderStatusBadge(accessible)}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-semibold text-primary">In-Depth Analysis</h2>
+              
+              <div className="flex justify-between items-center mb-6">
+                <Button 
+                  variant="primary"
+                  onClick={goToPrevious}
+                  disabled={currentIndex === 0}
+                  className="flex items-center gap-2"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                
+                <span className="text-muted-foreground font-medium">
+                  Section {currentIndex + 1} of {keys.length}
+                </span>
+                
+                <Button 
+                  variant="primary"
+                  onClick={goToNext}
+                  disabled={currentIndex === keys.length - 1}
+                  className="flex items-center gap-2"
+                >
+                  Next
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <Card className="overflow-hidden shadow-lg">
+                <CardHeader className="bg-muted border-b border-border">
+                  <CardTitle className="text-xl font-semibold">
+                    {currentKey && currentKey.replace(/_/g, ' ')}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                    {/* Font Sample Image */}
+                    <div className="bg-white p-6 rounded-lg shadow-sm border border-border">
+                      <figure className="flex flex-col items-center">
+                        {currentFont.img ? (
+                          <img 
+                            src={currentFont.img} 
+                            alt={`Font sample for ${currentKey}`}
+                            className="max-w-full max-h-[300px] object-contain rounded-md"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = '/placeholder.png';
+                              e.target.alt = 'Image not available';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-[200px] flex items-center justify-center bg-muted/30 rounded-md">
+                            <p className="text-muted-foreground">No image available</p>
+                          </div>
+                        )}
+                        <figcaption className="mt-4 text-sm text-muted-foreground">
+                          {currentKey && currentKey.replace(/_/g, ' ')}
+                        </figcaption>
+                      </figure>
+                    </div>
+                    
+                    {/* Font Metrics */}
+                    <div className="bg-muted/30 rounded-lg p-6">
+                      <div className="space-y-4">
+                        <div className="flex items-center bg-white rounded-md p-4 shadow-sm">
+                          <span className="text-muted-foreground font-medium w-32">Font Size</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{currentFontSize.toFixed(2)}pt</span>
+                            {renderStatusBadge(currentFontAccessible)}
+                          </div>
                         </div>
                         
-                        <div className="space-y-3">
-                          <h4 className="font-medium">Best Practices</h4>
-                          <ul className="space-y-2">
-                            <li className="flex items-start gap-2">
-                              <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                              <span>Use relative units (em, rem) when possible</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                              <span>Body text should be scalable up to 200%</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                              <span>Consider enough contrast with backgrounds</span>
-                            </li>
-                          </ul>
+                        <div className="flex items-center bg-white rounded-md p-4 shadow-sm">
+                          <span className="text-muted-foreground font-medium w-32">Type</span>
+                          <span className="font-medium">{currentFont.type}</span>
                         </div>
+                        
+                        {createFeedback(currentFontSize, currentFontAccessible)}
                       </div>
-
-                      <div className="mt-2 text-sm">
-                        <Button 
-                          variant="link" 
-                          className="text-primary p-0 h-auto"
-                          onClick={() => window.open("https://www.w3.org/WAI/WCAG21/Understanding/resize-text.html", "_blank")}
-                        >
-                          <span className="flex items-center gap-1">
-                            Learn more about WCAG text sizing guidelines
-                            <ExternalLink className="h-3 w-3" />
-                          </span>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-          
-          {/* Pagination controls for navigating between metrics */}
-          <div className="flex items-center justify-between">
-            <Button 
-              variant="outline" 
-              className="flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
-              onClick={() => navigate("/analysis/contrast")}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              <Contrast className="h-4 w-4 mr-1" />
-              Color Contrast
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              className="flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
-              onClick={() => navigate("/analysis/logo")}
-            >
-              Logo Analysis
-              <ImageIcon className="h-4 w-4 ml-1" />
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </main>
       
       <Footer />
     </div>
-  );
-}
-
-// Adding missing imports
-function ChevronDown(props) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-
-function BarChart2(props) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <line x1="18" x2="18" y1="20" y2="10" />
-      <line x1="12" x2="12" y1="20" y2="4" />
-      <line x1="6" x2="6" y1="20" y2="14" />
-    </svg>
   );
 }
