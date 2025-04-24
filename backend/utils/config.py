@@ -7,6 +7,7 @@ DIRECTORIES_TO_CLEAR = [
     "utils/Buffer/components",
     "utils/Output/Color_Contrast",
     "utils/Output/"
+    # "utils/Models" is intentionally NOT included!
 ]
 
 def clear_directories():

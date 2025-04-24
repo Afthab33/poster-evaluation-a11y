@@ -10,6 +10,7 @@ from utils.caption_extractor import get_image_captions
 from utils.font_size import check_text_font_sizes
 from werkzeug.middleware.proxy_fix import ProxyFix
 import gc
+from utils.model_loader import get_model_paths
 
 app = Flask(__name__)
 # Add ProxyFix middleware to handle forwarded headers
@@ -52,6 +53,7 @@ def clear_directories():
         "utils/Buffer/components",
         "utils/Output/Color_Contrast",
         "utils/Output"
+        # "utils/Models" is intentionally NOT included!
     ]
     
     for directory in directories:
@@ -293,10 +295,17 @@ def debug_request():
         }
         return jsonify(data)
 
+def ensure_models_downloaded():
+    try:
+        get_model_paths()  # This will download/check all models at startup
+        print("All models are present.")
+    except Exception as e:
+        print(f"Model download/check failed: {e}")
+
 if __name__ == "__main__":
     # Ensure directories exist at startup
     ensure_directories_exist()
-    
+    ensure_models_downloaded()  # <--- Add this line
     # Use environment variables for port configuration
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", debug=False, port=port)
