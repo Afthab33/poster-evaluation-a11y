@@ -305,7 +305,7 @@ export default function FontAnalysisPage() {
                         <img 
                           src={
                             currentFont.img
-                              ? `${import.meta.env.VITE_API_URL}/get-image/${encodeURIComponent(currentFont.img)}`
+                              ? `${import.meta.env.VITE_API_URL}/${currentFont.img}`
                               : '/placeholder.png'
                           }
                           alt={`Font sample for ${currentKey}`}
