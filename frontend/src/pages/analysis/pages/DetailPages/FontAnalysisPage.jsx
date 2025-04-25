@@ -302,15 +302,16 @@ export default function FontAnalysisPage() {
                     {/* Font Sample Image */}
                     <div className="bg-white p-6 rounded-lg shadow-sm border border-border">
                       <figure className="flex flex-col items-center">
-                        <img 
+                      <img 
                           src={
                             currentFont.img
-                              ? `${import.meta.env.VITE_API_URL}/${currentFont.img}`
+                              ? `https://poster-evaluation-a11y-795777136792.us-central1.run.app/${currentFont.img}`
                               : '/placeholder.png'
                           }
                           alt={`Font sample for ${currentKey}`}
                           className="max-w-full max-h-[300px] object-contain rounded-md"
                           onError={(e) => {
+                            console.error("Image failed to load:", e.target.src);
                             e.target.onerror = null;
                             e.target.src = '/placeholder.png';
                             e.target.alt = 'Image not available';
