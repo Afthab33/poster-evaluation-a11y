@@ -162,146 +162,150 @@ export default function DiagramAnalysisPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      
-      {/* Add the metrics sidebar for vertical navigation */}
       <MetricsSidebar />
       
-      <main className="flex-1 py-8">
-        <div className="container mx-auto px-4 pl-[60px]">
+      <main className="flex-1 py-4">
+        <div className="container mx-auto px-3 pl-[60px]">
           {/* Top navigation bar with metrics dropdown */}
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-3 flex items-center justify-between">
             <Button 
               variant="ghost" 
-              className="-ml-4 flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
+              className="-ml-2 flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors text-sm px-2"
               onClick={() => navigate("/analysis")}
               aria-label="Return to analysis page"
             >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Analysis
+              <ArrowLeft className="h-3 w-3" />
+              Back
             </Button>
             
             {/* Metrics navigation dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <BarChart2 className="h-4 w-4 text-primary" />
+                <Button variant="outline" className="flex items-center gap-1 h-8 text-xs">
+                  <BarChart2 className="h-3 w-3 text-primary" />
                   <span>Switch Metric</span>
-                  <ChevronDown className="h-4 w-4 ml-1" />
+                  <ChevronDown className="h-3 w-3 ml-1" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem onClick={() => navigate("/analysis/contrast")}>
-                  <Contrast className="h-4 w-4 mr-2 text-primary" />
-                  <span>Color Contrast</span>
+                  <Contrast className="h-3 w-3 mr-2 text-primary" />
+                  <span className="text-xs">Color Contrast</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/analysis/logo")}>
-                  <ImageIcon className="h-4 w-4 mr-2 text-primary" />
-                  <span>Logo Analysis</span>
+                  <ImageIcon className="h-3 w-3 mr-2 text-primary" />
+                  <span className="text-xs">Logo Analysis</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/analysis/hyperlinks")}>
-                  <LinkIcon className="h-4 w-4 mr-2 text-primary" />
-                  <span>Hyperlinks</span>
+                  <LinkIcon className="h-3 w-3 mr-2 text-primary" />
+                  <span className="text-xs">Hyperlinks</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/analysis/resolution")}>
-                  <Maximize className="h-4 w-4 mr-2 text-primary" />
-                  <span>Resolution</span>
+                  <Maximize className="h-3 w-3 mr-2 text-primary" />
+                  <span className="text-xs">Resolution</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/analysis/authors")}>
-                  <Users className="h-4 w-4 mr-2 text-primary" />
-                  <span>Authors</span>
+                  <Users className="h-3 w-3 mr-2 text-primary" />
+                  <span className="text-xs">Authors</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/analysis/fonts")}>
-                  <Type className="h-4 w-4 mr-2 text-primary" />
-                  <span>Font Analysis</span>
+                  <Type className="h-3 w-3 mr-2 text-primary" />
+                  <span className="text-xs">Font Analysis</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/analysis/tables")}>
-                  <Table2 className="h-4 w-4 mr-2 text-primary" />
-                  <span>Tables</span>
+                  <Table2 className="h-3 w-3 mr-2 text-primary" />
+                  <span className="text-xs">Tables</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem disabled>
-                  <BarChart2 className="h-4 w-4 mr-2 text-primary" />
-                  <span>Diagrams</span>
+                  <BarChart2 className="h-3 w-3 mr-2 text-primary" />
+                  <span className="text-xs">Diagrams</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
           
-          <Card className="mb-8">
-            <CardHeader>
+          <Card className="mb-4">
+            <CardHeader className="py-3 px-4">
               <div className="flex items-center gap-2">
-                <BarChart2 className="h-6 w-6 text-primary" />
+                <BarChart2 className="h-5 w-5 text-primary" />
                 <div>
-                  <CardTitle className="text-2xl font-bold text-primary">
+                  <CardTitle className="text-lg font-bold text-primary">
                     Diagram Analysis
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-xs">
                     Evaluation of diagrams and their captions for accessibility
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 pt-2 pb-3">
               {error ? (
-                <Alert variant="destructive">
+                <Alert variant="destructive" className="py-2">
                   <AlertTriangle className="h-4 w-4" />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{error}</AlertDescription>
+                  <AlertTitle className="text-sm">Error</AlertTitle>
+                  <AlertDescription className="text-xs">{error}</AlertDescription>
                 </Alert>
               ) : (
                 <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
+                  <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-3">
                     <TabsTrigger value="overview">Overview</TabsTrigger>
                     <TabsTrigger value="depth">In-Depth Analysis</TabsTrigger>
                   </TabsList>
                   
                   {/* Overview Tab */}
-                  <TabsContent value="overview" className="space-y-6">
+                  <TabsContent value="overview" className="space-y-3">
                     {/* Stats cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <Card>
-                        <CardContent className="pt-6 flex flex-col items-center justify-center h-32">
-                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                            <BarChart2 className="h-6 w-6 text-primary" />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                      <Card className="overflow-hidden">
+                        <CardContent className="p-3 flex flex-row items-center justify-between gap-2">
+                          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                            <BarChart2 className="h-4 w-4 text-primary" />
                           </div>
-                          <p className="text-sm text-muted-foreground">Total Diagrams</p>
-                          <p className="text-3xl font-bold">{diagrams.length}</p>
+                          <div className="text-right">
+                            <p className="text-xs text-muted-foreground">Total Diagrams</p>
+                            <p className="text-xl font-bold">{diagrams.length}</p>
+                          </div>
                         </CardContent>
                       </Card>
                       
-                      <Card>
-                        <CardContent className="pt-6 flex flex-col items-center justify-center h-32">
-                          <div className="h-10 w-10 rounded-full bg-secondary/10 flex items-center justify-center mb-2">
-                            <CheckCircle className="h-6 w-6 text-secondary" />
+                      <Card className="overflow-hidden">
+                        <CardContent className="p-3 flex flex-row items-center justify-between gap-2">
+                          <div className="h-8 w-8 rounded-full bg-secondary/10 flex items-center justify-center">
+                            <CheckCircle className="h-4 w-4 text-secondary" />
                           </div>
-                          <p className="text-sm text-muted-foreground">With Captions</p>
-                          <p className="text-3xl font-bold">{withCaptions}</p>
+                          <div className="text-right">
+                            <p className="text-xs text-muted-foreground">With Captions</p>
+                            <p className="text-xl font-bold">{withCaptions}</p>
+                          </div>
                         </CardContent>
                       </Card>
                       
-                      <Card>
-                        <CardContent className="pt-6 flex flex-col items-center justify-center h-32">
-                          <div className="h-10 w-10 rounded-full bg-destructive/10 flex items-center justify-center mb-2">
-                            <XCircle className="h-6 w-6 text-destructive" />
+                      <Card className="overflow-hidden">
+                        <CardContent className="p-3 flex flex-row items-center justify-between gap-2">
+                          <div className="h-8 w-8 rounded-full bg-destructive/10 flex items-center justify-center">
+                            <XCircle className="h-4 w-4 text-destructive" />
                           </div>
-                          <p className="text-sm text-muted-foreground">Missing Captions</p>
-                          <p className="text-3xl font-bold">{withoutCaptions}</p>
+                          <div className="text-right">
+                            <p className="text-xs text-muted-foreground">Missing Captions</p>
+                            <p className="text-xl font-bold">{withoutCaptions}</p>
+                          </div>
                         </CardContent>
                       </Card>
                     </div>
                     
                     {/* Diagrams table */}
                     <Card>
-                      <CardHeader>
-                        <CardTitle className="text-lg">Diagram Overview</CardTitle>
+                      <CardHeader className="py-2 px-3">
+                        <CardTitle className="text-sm">Diagram Overview</CardTitle>
                       </CardHeader>
-                      <CardContent>
-                        <ScrollArea className="h-[400px]">
+                      <CardContent className="p-0">
+                        <ScrollArea className="h-[280px]">
                           <Table>
                             <TableHeader>
                               <TableRow>
-                                <TableHead className="w-[200px]">Diagram</TableHead>
-                                <TableHead className="w-[200px]">Caption Status</TableHead>
-                                <TableHead>Caption Preview</TableHead>
+                                <TableHead className="w-[200px] py-2 text-xs">Diagram</TableHead>
+                                <TableHead className="w-[160px] py-2 text-xs">Caption Status</TableHead>
+                                <TableHead className="py-2 text-xs">Caption Preview</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -320,21 +324,21 @@ export default function DiagramAnalysisPage() {
                                       setActiveTab("depth");
                                     }}
                                   >
-                                    <TableCell className="font-medium">{diagram.key}</TableCell>
-                                    <TableCell>
+                                    <TableCell className="font-medium py-1.5 text-xs">{diagram.key}</TableCell>
+                                    <TableCell className="py-1.5">
                                       {hasCaption ? (
-                                        <Badge variant="outline" className="bg-secondary/10 text-secondary border-secondary flex items-center gap-1">
-                                          <CheckCircle className="h-3.5 w-3.5" />
+                                        <Badge variant="outline" className="bg-secondary/10 text-secondary border-secondary flex items-center gap-1 text-[10px] py-0 px-1">
+                                          <CheckCircle className="h-2.5 w-2.5" />
                                           Has Caption
                                         </Badge>
                                       ) : (
-                                        <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive flex items-center gap-1">
-                                          <XCircle className="h-3.5 w-3.5" />
+                                        <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive flex items-center gap-1 text-[10px] py-0 px-1">
+                                          <XCircle className="h-2.5 w-2.5" />
                                           No Caption
                                         </Badge>
                                       )}
                                     </TableCell>
-                                    <TableCell className="text-muted-foreground text-sm">
+                                    <TableCell className="text-muted-foreground text-xs py-1.5">
                                       {captionPreview}
                                     </TableCell>
                                   </TableRow>
@@ -351,27 +355,27 @@ export default function DiagramAnalysisPage() {
                   <TabsContent value="depth">
                     {currentDiagram ? (
                       <>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                           {/* Diagram image section */}
                           <Card>
-                            <CardHeader>
-                              <CardTitle className="text-lg">
+                            <CardHeader className="py-2 px-3">
+                              <CardTitle className="text-sm">
                                 {currentDiagram.key} ({currentDiagramIndex + 1} of {diagrams.length})
                               </CardTitle>
                             </CardHeader>
-                            <CardContent className="flex items-center justify-center bg-muted/30 rounded-md min-h-[400px]">
+                            <CardContent className="flex items-center justify-center bg-muted/30 rounded-md h-[280px] p-2">
                               {currentDiagram.image_path ? (
                                 <AspectRatio ratio={16/9} className="max-w-full">
                                   <img 
                                     src={currentDiagram.image_path} 
                                     alt={`Diagram ${currentDiagramIndex + 1} visualization`}
-                                    className="object-contain max-h-[350px] rounded-md"
+                                    className="object-contain max-h-[260px] rounded-md"
                                   />
                                 </AspectRatio>
                               ) : (
                                 <div className="text-center text-muted-foreground">
-                                  <AlertTriangle className="h-12 w-12 text-muted-foreground mb-2 mx-auto" />
-                                  <p>No image available for this diagram</p>
+                                  <AlertTriangle className="h-8 w-8 text-muted-foreground mb-1 mx-auto" />
+                                  <p className="text-xs">No image available for this diagram</p>
                                 </div>
                               )}
                             </CardContent>
@@ -379,42 +383,42 @@ export default function DiagramAnalysisPage() {
                           
                           {/* Caption section */}
                           <Card>
-                            <CardHeader>
-                              <CardTitle className="text-lg">Caption Analysis</CardTitle>
+                            <CardHeader className="py-2 px-3">
+                              <CardTitle className="text-sm">Caption Analysis</CardTitle>
                             </CardHeader>
-                            <CardContent className="min-h-[400px]">
+                            <CardContent className="h-[280px] p-3 overflow-auto">
                               {isValidCaption(currentDiagram.captionText) ? (
-                                <div className="space-y-4">
+                                <div className="space-y-2">
                                   <div className="flex items-center">
-                                    <Badge variant="outline" className="bg-secondary/10 text-secondary border-secondary flex items-center gap-1">
-                                      <CheckCircle className="h-3.5 w-3.5" />
+                                    <Badge variant="outline" className="bg-secondary/10 text-secondary border-secondary flex items-center gap-1 text-xs">
+                                      <CheckCircle className="h-3 w-3" />
                                       Has Caption
                                     </Badge>
                                   </div>
                                   
-                                  <Separator />
+                                  <Separator className="my-1" />
                                   
                                   <div>
-                                    <h4 className="text-sm font-medium text-muted-foreground mb-2">Caption Content:</h4>
-                                    <div className="p-4 bg-muted rounded-md text-foreground">
+                                    <h4 className="text-xs font-medium text-muted-foreground mb-1">Caption Content:</h4>
+                                    <div className="p-2 bg-muted rounded-md text-foreground text-xs">
                                       {currentDiagram.captionText}
                                     </div>
                                   </div>
                                 </div>
                               ) : (
-                                <div className="space-y-4">
+                                <div className="space-y-2">
                                   <div className="flex items-center">
-                                    <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive flex items-center gap-1">
-                                      <XCircle className="h-3.5 w-3.5" />
+                                    <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive flex items-center gap-1 text-xs">
+                                      <XCircle className="h-3 w-3" />
                                       No Caption
                                     </Badge>
                                   </div>
                                   
-                                  <Alert variant="destructive">
-                                    <AlertTriangle className="h-4 w-4" />
-                                    <AlertTitle>Missing Caption: Accessibility Impact</AlertTitle>
-                                    <AlertDescription>
-                                      <ul className="list-disc pl-5 space-y-1 mt-2">
+                                  <Alert variant="destructive" className="py-2">
+                                    <AlertTriangle className="h-3 w-3" />
+                                    <AlertTitle className="text-xs">Missing Caption: Accessibility Impact</AlertTitle>
+                                    <AlertDescription className="text-xs">
+                                      <ul className="list-disc pl-4 space-y-0.5 mt-1">
                                         <li>Screen readers cannot convey the diagram's content</li>
                                         <li>Users may miss important information</li>
                                         <li>Reduces understanding of the visualization</li>
@@ -422,11 +426,11 @@ export default function DiagramAnalysisPage() {
                                     </AlertDescription>
                                   </Alert>
                                   
-                                  <Alert className="bg-primary/5 border-primary">
-                                    <Info className="h-4 w-4 text-primary" />
-                                    <AlertTitle>Recommendations</AlertTitle>
-                                    <AlertDescription>
-                                      <ul className="list-disc pl-5 space-y-1 mt-2">
+                                  <Alert className="bg-primary/5 border-primary py-2">
+                                    <Info className="h-3 w-3 text-primary" />
+                                    <AlertTitle className="text-xs">Recommendations</AlertTitle>
+                                    <AlertDescription className="text-xs">
+                                      <ul className="list-disc pl-4 space-y-0.5 mt-1">
                                         <li>Add a clear, descriptive caption</li>
                                         <li>Explain key elements and relationships</li>
                                         <li>Include relevant measurements or trends</li>
@@ -441,36 +445,36 @@ export default function DiagramAnalysisPage() {
                         </div>
                         
                         {/* Navigation controls */}
-                        <div className="flex items-center justify-between mt-8">
+                        <div className="flex items-center justify-between mt-3">
                           <Button
                             variant="outline"
                             onClick={() => navigateDiagram(-1)}
                             disabled={currentDiagramIndex === 0}
-                            className="flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
+                            className="flex items-center gap-1 h-7 text-xs"
                           >
-                            <ChevronLeft className="h-4 w-4" />
-                            Previous Diagram
+                            <ChevronLeft className="h-3 w-3" />
+                            Previous
                           </Button>
                           
                           <Button
                             variant="outline"
                             onClick={() => navigateDiagram(1)}
                             disabled={currentDiagramIndex === diagrams.length - 1}
-                            className="flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
+                            className="flex items-center gap-1 h-7 text-xs"
                           >
-                            Next Diagram
-                            <ChevronRight className="h-4 w-4" />
+                            Next
+                            <ChevronRight className="h-3 w-3" />
                           </Button>
                         </div>
                       </>
                     ) : (
-                      <Card className="border-dashed border-2">
-                        <CardContent className="p-12 flex flex-col items-center justify-center">
-                          <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
-                          <h3 className="text-lg font-semibold text-foreground mb-2">
+                      <Card className="border-dashed border">
+                        <CardContent className="p-6 flex flex-col items-center justify-center">
+                          <AlertTriangle className="h-8 w-8 text-muted-foreground mb-2" />
+                          <h3 className="text-sm font-semibold text-foreground mb-1">
                             No Diagram Selected
                           </h3>
-                          <p className="text-muted-foreground text-center">
+                          <p className="text-muted-foreground text-center text-xs">
                             Please select a diagram from the overview tab.
                           </p>
                         </CardContent>
@@ -486,22 +490,22 @@ export default function DiagramAnalysisPage() {
           <div className="flex items-center justify-between">
             <Button 
               variant="outline" 
-              className="flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
+              className="flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors h-7 text-xs"
               onClick={() => navigate("/analysis/tables")}
             >
-              <ChevronLeft className="h-4 w-4" />
-              <Table2 className="h-4 w-4 mr-1" />
+              <ChevronLeft className="h-3 w-3" />
+              <Table2 className="h-3 w-3 mr-1" />
               Tables
             </Button>
             
             <Button 
               variant="outline" 
-              className="flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
+              className="flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors h-7 text-xs"
               onClick={() => navigate("/analysis/fonts")}
             >
               Font Analysis
-              <Type className="h-4 w-4 ml-1" />
-              <ChevronRight className="h-4 w-4" />
+              <Type className="h-3 w-3 ml-1" />
+              <ChevronRight className="h-3 w-3" />
             </Button>
           </div>
         </div>

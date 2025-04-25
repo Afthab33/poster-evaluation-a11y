@@ -357,50 +357,50 @@ export default function PosterUploadPage() {
       <Navbar />
       <Toaster richColors position="top-right" />
       
-      <main className="flex-1 py-12">
+      <main className="flex-1 py-6">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            <h1 className="text-3xl font-bold text-primary mb-3">Upload Your Poster</h1>
-            <p className="text-muted-foreground mb-8 max-w-2xl">
+            <h1 className="text-2xl font-bold text-primary mb-2">Upload Your Poster</h1>
+            <p className="text-muted-foreground mb-4 max-w-2xl text-sm">
               Upload your academic poster for accessibility analysis. We'll check for color contrast, font sizes, image quality, and more.
             </p>
             
             {/* Main upload card with tabs */}
-            <Card className="mb-8 overflow-hidden">
+            <Card className="mb-4 overflow-hidden shadow-sm">
               <Tabs defaultValue="upload" value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="w-full justify-start rounded-none border-b border-border p-0">
                   <TabsTrigger 
                     value="upload" 
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6 py-3"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-4 py-2 text-sm"
                   >
                     Upload
                   </TabsTrigger>
                   <TabsTrigger 
                     value="preview" 
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6 py-3"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-4 py-2 text-sm"
                     disabled={!file}
                   >
                     Preview
                   </TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="upload" className="p-6 m-0">
+                <TabsContent value="upload" className="p-4 m-0">
                   {/* Simple file requirements */}
-                  <div className="flex items-center gap-2 mb-6 text-sm text-muted-foreground">
-                    <Info className="h-4 w-4 text-primary" />
+                  <div className="flex items-center gap-2 mb-3 text-xs text-muted-foreground">
+                    <Info className="h-3 w-3 text-primary" />
                     <span>Accepted formats: PNG, JPG, PDF (max 20MB)</span>
                     
                     <HoverCard>
                       <HoverCardTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 ml-1">
-                          <Info className="h-3.5 w-3.5" />
+                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0 ml-1">
+                          <Info className="h-3 w-3" />
                           <span className="sr-only">More info</span>
                         </Button>
                       </HoverCardTrigger>
-                      <HoverCardContent className="w-80">
-                        <div className="space-y-2">
-                          <h4 className="text-sm font-semibold">For best results:</h4>
-                          <ul className="text-xs space-y-1">
+                      <HoverCardContent className="w-72">
+                        <div className="space-y-1">
+                          <h4 className="text-xs font-semibold">For best results:</h4>
+                          <ul className="text-xs space-y-0.5">
                             <li className="flex items-start gap-1">
                               <CheckCircle className="h-3 w-3 text-secondary mt-0.5" /> 
                               Use at least 150 DPI resolution
@@ -419,9 +419,9 @@ export default function PosterUploadPage() {
                     </HoverCard>
                   </div>
                   
-                  {/* Drag & Drop Area - improved visual feedback */}
+                  {/* Drag & Drop Area - more compact */}
                   <div
-                    className={`border-2 border-dashed rounded-lg p-10 text-center cursor-pointer transition-all ${
+                    className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all ${
                       isDragging ? "border-primary bg-primary/5 shadow-inner" : 
                       file ? "border-secondary bg-secondary/5" : "border-border hover:border-primary/50 hover:bg-muted/30"
                     }`}
@@ -439,34 +439,34 @@ export default function PosterUploadPage() {
                     aria-label="Upload area. Click or drag and drop a file here."
                   >
                     {file ? (
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="w-16 h-16 rounded-full bg-secondary/20 flex items-center justify-center">
+                      <div className="flex gap-3 items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
                           {file.type.startsWith('image/') ? (
-                            <ImageIcon className="h-8 w-8 text-secondary" />
+                            <ImageIcon className="h-6 w-6 text-secondary" />
                           ) : (
-                            <FileText className="h-8 w-8 text-secondary" />
+                            <FileText className="h-6 w-6 text-secondary" />
                           )}
                         </div>
-                        <div>
-                          <p className="text-foreground font-semibold mb-1">{file.name}</p>
-                          <Badge variant="outline" className="font-normal">
+                        <div className="text-left">
+                          <p className="text-foreground font-semibold text-sm mb-0.5">{file.name}</p>
+                          <Badge variant="outline" className="font-normal text-xs">
                             {(file.size / (1024 * 1024)).toFixed(2)} MB • {file.type.split('/')[1].toUpperCase()}
                           </Badge>
-                          <p className="text-xs text-muted-foreground mt-2">
+                          <p className="text-xs text-muted-foreground mt-1">
                             Click to choose a different file
                           </p>
                         </div>
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
-                          <Upload className="h-8 w-8 text-primary" />
+                      <div className="flex gap-3 items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
+                          <Upload className="h-6 w-6 text-primary" />
                         </div>
-                        <div>
-                          <p className="text-foreground font-semibold mb-1">
+                        <div className="text-left">
+                          <p className="text-foreground font-semibold text-sm mb-0.5">
                             Drag & drop your poster here
                           </p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             or click to browse files
                           </p>
                         </div>
@@ -487,19 +487,19 @@ export default function PosterUploadPage() {
                 <TabsContent value="preview" className="p-0 m-0">
                   {file && filePreview && (
                     <div className="flex flex-col">
-                      <div className="p-4 flex justify-between items-center border-b border-border bg-muted/20">
-                        <div className="flex items-center gap-3">
-                          <Badge variant="outline" className="bg-card">
+                      <div className="py-2 px-4 flex justify-between items-center border-b border-border bg-muted/20">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="bg-card text-xs">
                             {fileInfo.type}
                           </Badge>
-                          <span className="text-sm font-medium">{file.name}</span>
+                          <span className="text-xs font-medium">{file.name}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="bg-card flex items-center gap-1">
-                            <FileType className="h-3 w-3" />
+                          <Badge variant="outline" className="bg-card flex items-center gap-1 text-xs">
+                            <FileType className="h-2.5 w-2.5" />
                             {fileInfo.dimensions}
                           </Badge>
-                          <Badge variant="outline" className="bg-card">
+                          <Badge variant="outline" className="bg-card text-xs">
                             {fileInfo.size} MB
                           </Badge>
                         </div>
@@ -509,16 +509,16 @@ export default function PosterUploadPage() {
                         <img 
                           src={filePreview} 
                           alt="Poster preview" 
-                          className="max-w-full max-h-[400px] object-contain"
+                          className="max-w-full max-h-[350px] object-contain"
                         />
                       </div>
                       
-                      <div className="p-6">
-                        <Alert variant="info" className="mb-4 bg-primary/5 border-primary/20">
-                          <Info className="h-4 w-4" />
-                          <AlertTitle className="text-foreground">Ready for Analysis</AlertTitle>
-                          <AlertDescription>
-                            Your poster is ready to be analyzed for accessibility issues. Click the button below to start.
+                      <div className="p-4">
+                        <Alert variant="info" className="mb-2 bg-primary/5 border-primary/20 py-2 text-xs">
+                          <Info className="h-3.5 w-3.5" />
+                          <AlertTitle className="text-foreground text-sm">Ready for Analysis</AlertTitle>
+                          <AlertDescription className="text-xs">
+                            Your poster is ready to be analyzed for accessibility issues.
                           </AlertDescription>
                         </Alert>
                       </div>
@@ -527,35 +527,35 @@ export default function PosterUploadPage() {
                 </TabsContent>
               </Tabs>
               
-              <CardContent className="pt-0 px-6 pb-6">
+              <CardContent className="pt-0 px-4 pb-4">
                 {/* Error message */}
                 {error && (
-                  <Alert variant="destructive" className="mb-6">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
+                  <Alert variant="destructive" className="mb-3 py-2 text-xs">
+                    <AlertCircle className="h-3.5 w-3.5" />
+                    <AlertTitle className="text-sm">Error</AlertTitle>
+                    <AlertDescription className="text-xs">{error}</AlertDescription>
                   </Alert>
                 )}
                 
                 {/* Upload progress */}
                 {uploading && (
-                  <div className="mb-6 mt-2">
-                    <div className="flex items-center mb-3">
-                      <span className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <div className="mb-3 mt-2">
+                    <div className="flex items-center mb-2">
+                      <span className="text-xs font-medium text-foreground flex items-center gap-2">
                         {processingComplete ? (
                           <>
-                            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                            <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
                             <span>Processing poster... This may take a few moments</span>
                           </>
                         ) : (
                           <>
-                            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                            <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
                             <span>Uploading and analyzing your poster...</span>
                           </>
                         )}
                       </span>
                     </div>
-                    <div className="h-2 w-full bg-muted/50 rounded-full overflow-hidden">
+                    <div className="h-1.5 w-full bg-muted/50 rounded-full overflow-hidden">
                       <div className="h-full bg-primary animate-pulse rounded-full"></div>
                     </div>
                   </div>
@@ -563,11 +563,11 @@ export default function PosterUploadPage() {
                 
                 {/* Accessibility facts - shown during analysis */}
                 {uploading && currentFact && (
-                  <div className="mb-6 p-4 bg-secondary/10 rounded-md border border-secondary/20">
-                    <div className="flex items-start gap-2">
-                      <Info className="h-4 w-4 text-secondary mt-1" />
+                  <div className="mb-3 p-2 bg-secondary/10 rounded-md border border-secondary/20">
+                    <div className="flex items-start gap-1.5">
+                      <Info className="h-3.5 w-3.5 text-secondary mt-0.5" />
                       <div 
-                        className="text-sm text-foreground" 
+                        className="text-xs text-foreground" 
                         dangerouslySetInnerHTML={{ __html: currentFact }}
                       />
                     </div>
@@ -575,29 +575,29 @@ export default function PosterUploadPage() {
                 )}
                 
                 {/* Action buttons */}
-                <div className="flex gap-4">
+                <div className="flex gap-2">
                   <Button
                     variant="default"
-                    size="lg"
+                    size="default"
                     onClick={file ? handleUpload : () => fileInputRef.current?.click()}
                     disabled={uploading}
-                    className={`flex-1 ${file ? "bg-primary hover:bg-primary/90 text-primary-foreground" : ""}`}
+                    className={`flex-1 text-sm ${file ? "bg-primary hover:bg-primary/90 text-primary-foreground" : ""}`}
                   >
                     {uploading ? (
                       <span className="flex items-center gap-2">
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                        {processingComplete ? "Processing your poster..." : "Analyzing..."}
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {processingComplete ? "Processing..." : "Analyzing..."}
                       </span>
                     ) : (
                       <span className="flex items-center gap-2">
                         {file ? (
                           <>
-                            <FileUp className="h-5 w-5" />
+                            <FileUp className="h-4 w-4" />
                             <span className="font-medium">Analyze Poster</span>
                           </>
                         ) : (
                           <>
-                            <Upload className="h-5 w-5" />
+                            <Upload className="h-4 w-4" />
                             Select a File
                           </>
                         )}
@@ -608,12 +608,12 @@ export default function PosterUploadPage() {
                   {file && (
                     <Button
                       variant="outline"
-                      size="lg"
+                      size="default"
                       onClick={handleReset}
                       disabled={uploading}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 text-sm"
                     >
-                      <RefreshCcw className="h-4 w-4" />
+                      <RefreshCcw className="h-3.5 w-3.5" />
                       Reset
                     </Button>
                   )}
@@ -621,48 +621,55 @@ export default function PosterUploadPage() {
               </CardContent>
             </Card>
             
-            {/* Information cards */}
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
-              <Card className="border-primary/20 bg-primary/5">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">What We Check</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-primary mt-0.5" />
-                      <span>Color contrast ratio for text readability</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-primary mt-0.5" />
-                      <span>Font sizes and text spacing</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-primary mt-0.5" />
-                      <span>Image resolution and quality</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-primary mt-0.5" />
-                      <span>Table accessibility and organization</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-primary mt-0.5" />
-                      <span>Logo clarity and visibility</span>
-                    </li>
-                  </ul>
+            {/* Information cards - more compact layout */}
+            <div className="grid md:grid-cols-2 gap-4 mb-4">
+              <Card className="border-l-4 border-l-primary overflow-hidden shadow-sm">
+                <CardContent className="p-0">
+                  <div className="flex gap-3 items-start p-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-base font-bold text-primary mb-1">What We Check</h3>
+                      <ul className="space-y-1 text-xs">
+                        <li className="flex items-start gap-1.5">
+                          <CheckCircle className="h-3 w-3 text-primary mt-0.5" />
+                          <span>Color contrast ratio for text readability</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <CheckCircle className="h-3 w-3 text-primary mt-0.5" />
+                          <span>Font sizes and text spacing</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <CheckCircle className="h-3 w-3 text-primary mt-0.5" />
+                          <span>Image resolution and quality</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <CheckCircle className="h-3 w-3 text-primary mt-0.5" />
+                          <span>Table accessibility and organization</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <CheckCircle className="h-3 w-3 text-primary mt-0.5" />
+                          <span>Logo clarity and visibility</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
               
-              <Card className="border-secondary/20 bg-secondary/5">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Testimonial</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <blockquote className="italic text-foreground">
-                    "Poster A11y helps identify critical accessibility issues in academic posters that we would have otherwise missed. Our posters are now more inclusive for all attendees."
-                  </blockquote>
-                  <div className="mt-4 text-sm text-muted-foreground">
-                    — Wajdi Aljedaani, Clinical Assistant Professor, University of North Texas
+              <Card className="border-l-4 border-l-secondary overflow-hidden shadow-sm">
+                <CardContent className="p-0">
+                  <div className="flex gap-3 items-start p-3">
+                    <div className="flex-1">
+                      <h3 className="text-base font-bold text-secondary mb-1">Testimonial</h3>
+                      <blockquote className="italic text-foreground text-xs">
+                        "Poster A11y helps identify critical accessibility issues in academic posters that we would have otherwise missed. Our posters are now more inclusive for all attendees."
+                      </blockquote>
+                      <div className="mt-1 text-[10px] text-muted-foreground">
+                        — Wajdi Aljedaani, Clinical Assistant Professor, University of North Texas
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

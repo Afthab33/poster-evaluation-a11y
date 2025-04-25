@@ -22,8 +22,12 @@ import {
   AlertTriangle,
   Info,
   Monitor,
-  Image
+  Image,
+  ChevronLeft,
+  ChevronRight,
+  Type
 } from "lucide-react";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 export default function ResolutionAnalysisPage() {
   const navigate = useNavigate();
@@ -113,86 +117,87 @@ export default function ResolutionAnalysisPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      
-      {/* Add the metrics sidebar for vertical navigation */}
       <MetricsSidebar />
       
-      <main className="flex-1 py-8">
-        <div className="container mx-auto px-4 pl-[60px]">
-          {/* Back button */}
-          <Button 
-            variant="ghost" 
-            className="mb-6 -ml-4 flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
-            onClick={() => navigate("/analysis")}
-            aria-label="Return to analysis page"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Analysis
-          </Button>
+      <main className="flex-1 py-4">
+        <div className="container mx-auto px-3 pl-[60px]">
+          {/* Top navigation bar with metrics dropdown */}
+          <div className="mb-3 flex items-center justify-between">
+            <Button 
+              variant="ghost" 
+              className="-ml-2 flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors text-sm px-2"
+              onClick={() => navigate("/analysis")}
+              aria-label="Return to analysis page"
+            >
+              <ArrowLeft className="h-3 w-3" />
+              Back
+            </Button>
+            
+          </div>
           
-          <Card className="mb-8">
-            <CardHeader>
+          <Card className="mb-4">
+            <CardHeader className="py-3 px-4">
               <div className="flex items-center gap-2">
-                <Maximize className="h-6 w-6 text-primary" />
+                <Maximize className="h-5 w-5 text-primary" />
                 <div>
-                  <CardTitle className="text-2xl font-bold text-primary">
+                  <CardTitle className="text-lg font-bold text-primary">
                     Resolution Analysis
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-xs">
                     Evaluation of poster resolution and display quality
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-3">
               {error ? (
-                <Alert variant="destructive">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{error}</AlertDescription>
+                <Alert variant="destructive" className="py-2">
+                  <AlertTriangle className="h-3 w-3" />
+                  <AlertTitle className="text-sm">Error</AlertTitle>
+                  <AlertDescription className="text-xs">{error}</AlertDescription>
                 </Alert>
               ) : (
-                <div className="space-y-8">
+                <div className="space-y-4">
                   {/* Resolution Card */}
                   <Card className={`border-l-4 ${meetsMinimum ? 'border-l-secondary' : 'border-l-destructive'}`}>
-                    <CardHeader>
-                      <div className="flex items-center gap-3">
-                        <div className="h-12 w-12 rounded-md bg-primary/10 flex items-center justify-center">
-                          <Maximize className="h-6 w-6 text-primary" />
+                    <CardContent className="p-3">
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center">
+                            <Maximize className="h-4 w-4 text-primary" />
+                          </div>
+                          <h3 className="text-base font-semibold">Resolution</h3>
                         </div>
-                        <CardTitle>Resolution</CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center gap-4 mb-6">
-                        <span className="text-4xl font-bold">{getFormattedResolution()}</span>
-                        {meetsMinimum ? (
-                          <CheckCircle className="h-8 w-8 text-secondary" />
-                        ) : (
-                          <XCircle className="h-8 w-8 text-destructive" />
-                        )}
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl font-bold">{getFormattedResolution()}</span>
+                          {meetsMinimum ? (
+                            <CheckCircle className="h-5 w-5 text-secondary" />
+                          ) : (
+                            <XCircle className="h-5 w-5 text-destructive" />
+                          )}
+                        </div>
                       </div>
                       
-                      <p className="text-muted-foreground mb-4">
+                      <p className="text-xs text-muted-foreground mb-2">
                         The resolution of your poster determines how clear and readable it will be when displayed or printed.
                       </p>
                       
                       {/* Status alert */}
-                      <Alert variant={meetsMinimum ? "default" : "destructive"} className={meetsMinimum ? "bg-secondary/10 text-secondary border-secondary" : ""}>
+                      <Alert variant={meetsMinimum ? "default" : "destructive"} className={`${meetsMinimum ? "bg-secondary/10 text-secondary border-secondary" : ""} py-2`}>
                         {meetsMinimum ? (
-                          <CheckCircle className="h-4 w-4" />
+                          <CheckCircle className="h-3 w-3" />
                         ) : (
-                          <AlertTriangle className="h-4 w-4" />
+                          <AlertTriangle className="h-3 w-3" />
                         )}
-                        <AlertTitle>
+                        <AlertTitle className="text-xs">
                           {meetsMinimum ? "Meets Recommended Threshold" : "Below Recommended Threshold"}
                         </AlertTitle>
-                        <AlertDescription>
-                          Your poster's resolution {meetsMinimum ? "is sufficient" : "doesn't meet the minimum"} for clear display (800 × 600).
+                        <AlertDescription className="text-xs">
+                          Your poster's resolution {meetsMinimum ? "is sufficient" : "doesn't meet the minimum"} for clear display ({MINIMUM_WIDTH} × {MINIMUM_HEIGHT}).
                           {!meetsMinimum && (
-                            <div className="mt-4 space-y-2">
-                              <p className="font-medium">Steps to improve resolution:</p>
-                              <ul className="list-disc ml-5 space-y-1">
+                            <div className="mt-2 space-y-1">
+                              <p className="font-medium text-xs">Steps to improve resolution:</p>
+                              <ul className="list-disc ml-4 space-y-0.5 text-xs">
                                 <li>Use a higher resolution image</li>
                                 <li>Ensure the image is not compressed</li>
                                 <li>Export the poster at a higher resolution</li>
@@ -204,21 +209,21 @@ export default function ResolutionAnalysisPage() {
                       
                       {/* HD status */}
                       {meetsMinimum && (
-                        <Alert className={`mt-4 ${meetsHD ? "bg-secondary/10 text-secondary border-secondary" : "bg-primary/10 border-primary text-primary"}`}>
+                        <Alert className={`mt-2 py-2 ${meetsHD ? "bg-secondary/10 text-secondary border-secondary" : "bg-primary/10 border-primary text-primary"}`}>
                           {meetsHD ? (
-                            <CheckCircle className="h-4 w-4" />
+                            <CheckCircle className="h-3 w-3" />
                           ) : (
-                            <Info className="h-4 w-4" />
+                            <Info className="h-3 w-3" />
                           )}
-                          <AlertTitle>
+                          <AlertTitle className="text-xs">
                             {meetsHD ? "HD Resolution" : "Standard Resolution"}
                           </AlertTitle>
-                          <AlertDescription>
-                            Your poster {meetsHD ? "meets" : "doesn't meet"} high-definition standards (1920 × 1080).
+                          <AlertDescription className="text-xs">
+                            Your poster {meetsHD ? "meets" : "doesn't meet"} high-definition standards ({HD_WIDTH} × {HD_HEIGHT}).
                             {!meetsHD && (
-                              <div className="mt-2">
+                              <span className="block mt-1">
                                 Consider increasing resolution for large displays or professional printing.
-                              </div>
+                              </span>
                             )}
                           </AlertDescription>
                         </Alert>
@@ -228,43 +233,55 @@ export default function ResolutionAnalysisPage() {
                   
                   {/* Threshold information */}
                   <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Recommended Thresholds</CardTitle>
+                    <CardHeader className="py-2 px-3">
+                      <CardTitle className="text-sm">Recommended Thresholds</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-start p-4 bg-muted rounded-md">
-                        <Image className="h-5 w-5 text-primary mt-0.5 mr-4 flex-shrink-0" />
-                        <div className="flex flex-1 justify-between">
+                    <CardContent className="p-3 space-y-2">
+                      <div className="flex items-start p-3 bg-muted rounded-md">
+                        <Image className="h-4 w-4 text-primary mt-0.5 mr-3 flex-shrink-0" />
+                        <div className="flex flex-1 justify-between items-center">
                           <div>
-                            <p className="font-medium">Minimum Resolution</p>
-                            <p className="text-sm text-muted-foreground">Recommended minimum resolution for web images</p>
+                            <p className="text-xs font-medium">Minimum Resolution</p>
+                            <p className="text-xs text-muted-foreground">Recommended minimum for web images</p>
                           </div>
-                          <div className="font-semibold text-primary">{MINIMUM_WIDTH} × {MINIMUM_HEIGHT}</div>
+                          <div className="font-semibold text-primary text-sm">{MINIMUM_WIDTH} × {MINIMUM_HEIGHT}</div>
                         </div>
                       </div>
                       
-                      <div className="flex items-start p-4 bg-muted rounded-md">
-                        <Monitor className="h-5 w-5 text-primary mt-0.5 mr-4 flex-shrink-0" />
-                        <div className="flex flex-1 justify-between">
+                      <div className="flex items-start p-3 bg-muted rounded-md">
+                        <Monitor className="h-4 w-4 text-primary mt-0.5 mr-3 flex-shrink-0" />
+                        <div className="flex flex-1 justify-between items-center">
                           <div>
-                            <p className="font-medium">HD Resolution</p>
-                            <p className="text-sm text-muted-foreground">Standard high-definition resolution</p>
+                            <p className="text-xs font-medium">HD Resolution</p>
+                            <p className="text-xs text-muted-foreground">Standard high-definition resolution</p>
                           </div>
-                          <div className="font-semibold text-primary">{HD_WIDTH} × {HD_HEIGHT}</div>
+                          <div className="font-semibold text-primary text-sm">{HD_WIDTH} × {HD_HEIGHT}</div>
                         </div>
                       </div>
                       
-                      <Alert className="mt-4 bg-primary/5 border-primary">
-                        <Info className="h-4 w-4 text-primary" />
-                        <AlertTitle>Resolution Importance</AlertTitle>
-                        <AlertDescription>
-                          <p className="mb-2">Higher resolution provides several benefits for accessibility:</p>
-                          <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-                            <li>Improved readability for text elements</li>
-                            <li>Better visualization of diagrams and graphs</li>
-                            <li>Allows users to zoom in without losing clarity</li>
-                            <li>More professional appearance in presentations</li>
-                          </ul>
+                      <Alert className="mt-2 bg-primary/5 border-primary py-2">
+                        <Info className="h-3 w-3 text-primary" />
+                        <AlertTitle className="text-xs">Resolution Importance</AlertTitle>
+                        <AlertDescription className="text-xs">
+                          <p className="mb-1">Higher resolution provides several benefits for accessibility:</p>
+                          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-primary text-xs">•</span>
+                              <span className="text-xs text-muted-foreground">Improved readability</span>
+                            </div>
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-primary text-xs">•</span>
+                              <span className="text-xs text-muted-foreground">Better visualization</span>
+                            </div>
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-primary text-xs">•</span>
+                              <span className="text-xs text-muted-foreground">Allows zooming in</span>
+                            </div>
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-primary text-xs">•</span>
+                              <span className="text-xs text-muted-foreground">Professional appearance</span>
+                            </div>
+                          </div>
                         </AlertDescription>
                       </Alert>
                     </CardContent>
@@ -273,6 +290,27 @@ export default function ResolutionAnalysisPage() {
               )}
             </CardContent>
           </Card>
+          
+          {/* Pagination controls for navigating between metrics */}
+          <div className="flex items-center justify-between">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors h-7 text-xs"
+              onClick={() => navigate("/analysis/hyperlinks")}
+            >
+              <ChevronLeft className="h-3 w-3" />
+              Hyperlinks
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-1 hover:bg-primary hover:text-primary-foreground transition-colors h-7 text-xs"
+              onClick={() => navigate("/analysis/authors")}
+            >
+              Authors
+              <ChevronRight className="h-3 w-3" />
+            </Button>
+          </div>
         </div>
       </main>
       

@@ -190,84 +190,84 @@ export default function AnalysisPage() {
       
       <main className="flex-1">
         <SkipNavContent />
-        <div className="container mx-auto px-4 py-8">
-          {/* Top navigation bar */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-border pb-4">
+        <div className="container mx-auto px-4 py-4">
+          {/* Top navigation bar - more compact */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 border-b border-border pb-2">
             <Button 
               variant="ghost" 
-              className="text-primary hover:bg-primary hover:text-primary-foreground transition-colors mb-4 md:mb-0 -ml-4"
+              className="text-primary hover:bg-primary hover:text-primary-foreground transition-colors mb-2 md:mb-0 -ml-4 py-1 h-auto"
               onClick={() => navigate("/upload")}
               aria-label="Return to upload page"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Upload
+              <ArrowLeft className="h-3.5 w-3.5 mr-1" />
+              <span className="text-sm">Back to Upload</span>
             </Button>
-            <div className="font-medium flex items-center gap-2">
-              <BookOpen className="h-4 w-4 text-primary" />
+            <div className="text-sm font-medium flex items-center gap-1">
+              <BookOpen className="h-3.5 w-3.5 text-primary" />
               {fileName}
             </div>
           </div>
           
-          {/* Summary cards - similar to old HTML summary section */}
-          <Card className="mb-6 bg-[#E29934] border-[#E29934]/20 text-white">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xl text-black flex items-center gap-2">
-                <PieChart className="h-5 w-5" />
+          {/* Summary cards - more compact layout */}
+          <Card className="mb-4 bg-[oklch(0.78_0.15_80)] border-[oklch(0.78_0.15_80)]/20 text-white shadow-sm">
+            <CardHeader className="py-0.2 px-4">
+              <CardTitle className="text-base text-black flex items-center gap-1.5">
+                <PieChart className="h-4 w-4" />
                 Accessibility Summary
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-primary backdrop-blur-sm rounded-md p-4 shadow-sm">
+            <CardContent className="py-0.2 px-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                <div className="bg-[oklch(0.56_0.13_180)] backdrop-blur-sm rounded-md p-2 shadow-sm">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
-                      <Contrast className="h-5 w-5 text-white" />
+                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center mr-2">
+                      <Contrast className="h-4 w-4 text-white" />
                     </div>
                     <div>
-                      <div className="text-sm text-white/80">Color Contrast</div>
-                      <div className="font-bold text-white">
+                      <div className="text-xs text-white/80">Color Contrast</div>
+                      <div className="font-bold text-sm text-white">
                         {contrastPassing ? `${contrastPassingCount}/${contrastTotalCount} Passing` : 'No data'}
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="bg-primary backdrop-blur-sm rounded-md p-4 shadow-sm">
+                <div className="bg-[oklch(0.56_0.13_180)] backdrop-blur-sm rounded-md p-2 shadow-sm">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
-                      <Type className="h-5 w-5 text-white" />
+                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center mr-2">
+                      <Type className="h-4 w-4 text-white" />
                     </div>
                     <div>
-                      <div className="text-sm text-white/80">Font Sizes</div>
-                      <div className="font-bold text-white">
+                      <div className="text-xs text-white/80">Font Sizes</div>
+                      <div className="font-bold text-sm text-white">
                         {fontSizesExist ? `${accessibleFontsPercentage}% Accessible` : 'No data'}
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="bg-primary backdrop-blur-sm rounded-md p-4 shadow-sm">
+                <div className="bg-[oklch(0.56_0.13_180)] backdrop-blur-sm rounded-md p-2 shadow-sm">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
-                      <ImageIcon className="h-5 w-5 text-white" />
+                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center mr-2">
+                      <ImageIcon className="h-4 w-4 text-white" />
                     </div>
                     <div>
-                      <div className="text-sm text-white/80">Logo Accessibility</div>
-                      <div className="font-bold text-white">
+                      <div className="text-xs text-white/80">Logo Accessibility</div>
+                      <div className="font-bold text-sm text-white">
                         {simpleLogos ? `${simpleLogoCount}/${logoTotalCount} Simple` : 'No data'}
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="bg-primary backdrop-blur-sm rounded-md p-4 shadow-sm">
+                <div className="bg-[oklch(0.56_0.13_180)] backdrop-blur-sm rounded-md p-2 shadow-sm">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
-                      <Maximize className="h-5 w-5 text-white" />
+                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center mr-2">
+                      <Maximize className="h-4 w-4 text-white" />
                     </div>
                     <div>
-                      <div className="text-sm text-white/80">Image Resolution</div>
-                      <div className="font-bold text-white">
+                      <div className="text-xs text-white/80">Image Resolution</div>
+                      <div className="font-bold text-sm text-white">
                         {hasResolution ? (goodResolution ? 'Sufficient' : 'Too Low') : 'No data'}
                       </div>
                     </div>
@@ -277,28 +277,28 @@ export default function AnalysisPage() {
             </CardContent>
           </Card>
           
-          {/* Main content */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-primary">
+          {/* Main content - more compact */}
+          <Card className="mb-4 shadow-sm">
+            <CardHeader className="py-3 px-4">
+              <CardTitle className="text-xl font-bold text-primary">
                 Poster Component Analysis
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs">
                 Explore each aspect of your poster's accessibility
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <CardContent className="p-4 pt-0">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* Left Column - Poster Visualization */}
                 <div className="lg:col-span-1">
-                  <div className="sticky top-8">
-                    <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                      <Layers className="h-5 w-5 text-primary" />
+                  <div className="sticky top-4">
+                    <h2 className="text-base font-semibold text-foreground mb-2 flex items-center gap-1.5">
+                      <Layers className="h-4 w-4 text-primary" />
                       Poster Layout
                     </h2>
                     
-                    <Card>
-                      <CardContent className="pt-6">
+                    <Card className="shadow-sm">
+                      <CardContent className="p-3">
                         <AspectRatio ratio={3/4} className="bg-muted rounded-md overflow-hidden">
                           {analysisData?.poster_layout ? (
                             <div 
@@ -310,42 +310,42 @@ export default function AnalysisPage() {
                                 alt="Poster components breakdown showing different elements like text, images, and logos"
                                 className="object-contain w-full h-full"
                               />
-                              <div className="absolute bottom-2 right-2 bg-black/60 text-white rounded-full p-1.5">
-                                <ZoomIn className="h-4 w-4" />
+                              <div className="absolute bottom-2 right-2 bg-black/60 text-white rounded-full p-1">
+                                <ZoomIn className="h-3.5 w-3.5" />
                               </div>
                             </div>
                           ) : (
                             <div className="flex items-center justify-center h-full bg-muted">
-                              <p className="text-muted-foreground">No layout data available</p>
+                              <p className="text-xs text-muted-foreground">No layout data available</p>
                             </div>
                           )}
                         </AspectRatio>
                       </CardContent>
                     </Card>
                     
-                    <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/10">
-                      <h3 className="font-medium text-foreground mb-2 flex items-center gap-2">
-                        <HelpCircle className="h-4 w-4 text-primary" />
+                    <div className="mt-2 p-3 bg-primary/5 rounded-lg border border-primary/10">
+                      <h3 className="text-sm font-medium text-foreground mb-1 flex items-center gap-1.5">
+                        <HelpCircle className="h-3.5 w-3.5 text-primary" />
                         Component Map
                       </h3>
-                      <p className="text-sm text-muted-foreground mb-2">
+                      <p className="text-xs text-muted-foreground mb-1">
                         This visualization maps the key elements of your poster. The color coding indicates:
                       </p>
-                      <ul className="text-sm space-y-1">
-                        <li className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                      <ul className="text-xs space-y-0.5">
+                        <li className="flex items-center gap-1.5">
+                          <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
                           <span className="text-muted-foreground">Text elements</span>
                         </li>
-                        <li className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                        <li className="flex items-center gap-1.5">
+                          <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
                           <span className="text-muted-foreground">Images & diagrams</span>
                         </li>
-                        <li className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+                        <li className="flex items-center gap-1.5">
+                          <div className="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
                           <span className="text-muted-foreground">Tables & data</span>
                         </li>
-                        <li className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                        <li className="flex items-center gap-1.5">
+                          <div className="w-2.5 h-2.5 rounded-full bg-purple-500"></div>
                           <span className="text-muted-foreground">Logos & branding</span>
                         </li>
                       </ul>
@@ -355,51 +355,51 @@ export default function AnalysisPage() {
                 
                 {/* Right Column - Accessibility Metrics */}
                 <div className="lg:col-span-2">
-                  <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <PieChart className="h-5 w-5 text-primary" />
+                  <h2 className="text-base font-semibold text-foreground mb-2 flex items-center gap-1.5">
+                    <PieChart className="h-4 w-4 text-primary" />
                     Accessibility Metrics
                   </h2>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Color Contrast Card - now with percentage info */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* Color Contrast Card - more compact */}
                     <Card 
                       className={`transition-all hover:shadow-md cursor-pointer border-l-4 ${contrastIsGood ? 'border-l-secondary' : 'border-l-destructive'}`}
                       onClick={() => navigateToDetailPage("contrast")}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <Contrast className="h-5 w-5 text-primary" />
+                      <CardContent className="p-3">
+                        <div className="flex items-start gap-2">
+                          <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Contrast className="h-4 w-4 text-primary" />
                           </div>
                           <div className="flex-grow">
-                            <h3 className="font-medium text-foreground">Color Contrast</h3>
-                            <p className="text-sm text-muted-foreground mb-2">Text readability against backgrounds</p>
+                            <h3 className="text-sm font-medium text-foreground">Color Contrast</h3>
+                            <p className="text-xs text-muted-foreground mb-1">Text readability against backgrounds</p>
                             
-                            <div className="flex items-center justify-between mt-1">
+                            <div className="flex items-center justify-between">
                               <div>
                                 {contrastPassing ? (
-                                  <div className="font-medium text-base">
+                                  <div className="font-medium text-sm">
                                     {contrastPassingCount}/{contrastTotalCount} sections pass
                                   </div>
                                 ) : (
-                                  <div className="text-muted-foreground">No contrast data</div>
+                                  <div className="text-xs text-muted-foreground">No contrast data</div>
                                 )}
                               </div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1.5">
                                 {getStatusBadge(contrastIsGood)}
-                                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
                               </div>
                             </div>
                             
                             {contrastPassing && (
-                              <div className="mt-2">
-                                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                              <div className="mt-1.5">
+                                <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                                   <div 
                                     className={`h-full ${contrastIsGood ? 'bg-secondary' : 'bg-destructive'}`}
                                     style={{ width: `${contrastPercentage}%` }}
                                   ></div>
                                 </div>
-                                <div className="text-xs text-muted-foreground mt-1">{contrastPercentage}% Pass WCAG Standards</div>
+                                <div className="text-[10px] text-muted-foreground mt-0.5">{contrastPercentage}% Pass WCAG Standards</div>
                               </div>
                             )}
                           </div>
@@ -407,45 +407,45 @@ export default function AnalysisPage() {
                       </CardContent>
                     </Card>
                     
-                    {/* Logo Evaluation */}
+                    {/* Logo Evaluation - more compact */}
                     <Card 
                       className={`transition-all hover:shadow-md cursor-pointer border-l-4 ${logosAreGood ? 'border-l-secondary' : 'border-l-destructive'}`}
                       onClick={() => navigateToDetailPage("logo")}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <ImageIcon className="h-5 w-5 text-primary" />
+                      <CardContent className="p-3">
+                        <div className="flex items-start gap-2">
+                          <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <ImageIcon className="h-4 w-4 text-primary" />
                           </div>
                           <div className="flex-grow">
-                            <h3 className="font-medium text-foreground">Logos Analysis</h3>
-                            <p className="text-sm text-muted-foreground mb-2">Clarity and readability of logos</p>
+                            <h3 className="text-sm font-medium text-foreground">Logos Analysis</h3>
+                            <p className="text-xs text-muted-foreground mb-1">Clarity and readability of logos</p>
                             
-                            <div className="flex items-center justify-between mt-1">
+                            <div className="flex items-center justify-between">
                               <div>
                                 {simpleLogos ? (
-                                  <div className="font-medium text-base">
+                                  <div className="font-medium text-sm">
                                     {simpleLogoCount}/{logoTotalCount} simple logos
                                   </div>
                                 ) : (
-                                  <div className="text-muted-foreground">No logo data</div>
+                                  <div className="text-xs text-muted-foreground">No logo data</div>
                                 )}
                               </div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1.5">
                                 {getStatusBadge(logosAreGood)}
-                                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
                               </div>
                             </div>
                             
                             {simpleLogos && (
-                              <div className="mt-2">
-                                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                              <div className="mt-1.5">
+                                <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                                   <div 
                                     className={`h-full ${logosAreGood ? 'bg-secondary' : 'bg-destructive'}`}
                                     style={{ width: `${simpleLogoPercentage}%` }}
                                   ></div>
                                 </div>
-                                <div className="text-xs text-muted-foreground mt-1">{simpleLogoPercentage}% Simple & Accessible</div>
+                                <div className="text-[10px] text-muted-foreground mt-0.5">{simpleLogoPercentage}% Simple & Accessible</div>
                               </div>
                             )}
                           </div>
@@ -453,45 +453,45 @@ export default function AnalysisPage() {
                       </CardContent>
                     </Card>
                     
-                    {/* Hyperlinks */}
+                    {/* Hyperlinks - more compact */}
                     <Card 
                       className={`transition-all hover:shadow-md cursor-pointer border-l-4 ${linksAreGood ? 'border-l-secondary' : 'border-l-destructive'}`}
                       onClick={() => navigateToDetailPage("hyperlinks")}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <LinkIcon className="h-5 w-5 text-primary" />
+                      <CardContent className="p-3">
+                        <div className="flex items-start gap-2">
+                          <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <LinkIcon className="h-4 w-4 text-primary" />
                           </div>
                           <div className="flex-grow">
-                            <h3 className="font-medium text-foreground">Hyperlinks</h3>
-                            <p className="text-sm text-muted-foreground mb-2">Validity of URLs and references</p>
+                            <h3 className="text-sm font-medium text-foreground">Hyperlinks</h3>
+                            <p className="text-xs text-muted-foreground mb-1">Validity of URLs and references</p>
                             
-                            <div className="flex items-center justify-between mt-1">
+                            <div className="flex items-center justify-between">
                               <div>
                                 {linksExist ? (
-                                  <div className="font-medium text-base">
+                                  <div className="font-medium text-sm">
                                     {validLinksCount}/{linksTotalCount} working links
                                   </div>
                                 ) : (
-                                  <div className="text-muted-foreground">No hyperlinks found</div>
+                                  <div className="text-xs text-muted-foreground">No hyperlinks found</div>
                                 )}
                               </div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1.5">
                                 {getStatusBadge(linksAreGood)}
-                                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
                               </div>
                             </div>
                             
                             {linksExist && (
-                              <div className="mt-2">
-                                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                              <div className="mt-1.5">
+                                <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                                   <div 
                                     className={`h-full ${linksAreGood ? 'bg-secondary' : 'bg-destructive'}`}
                                     style={{ width: `${validLinksPercentage}%` }}
                                   ></div>
                                 </div>
-                                <div className="text-xs text-muted-foreground mt-1">{validLinksPercentage}% Valid URLs</div>
+                                <div className="text-[10px] text-muted-foreground mt-0.5">{validLinksPercentage}% Valid URLs</div>
                               </div>
                             )}
                           </div>
@@ -499,41 +499,41 @@ export default function AnalysisPage() {
                       </CardContent>
                     </Card>
                     
-                    {/* Resolution */}
+                    {/* Resolution - more compact */}
                     <Card 
                       className={`transition-all hover:shadow-md cursor-pointer border-l-4 ${goodResolution ? 'border-l-secondary' : 'border-l-destructive'}`}
                       onClick={() => navigateToDetailPage("resolution")}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <Maximize className="h-5 w-5 text-primary" />
+                      <CardContent className="p-3">
+                        <div className="flex items-start gap-2">
+                          <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Maximize className="h-4 w-4 text-primary" />
                           </div>
                           <div className="flex-grow">
-                            <h3 className="font-medium text-foreground">Resolution</h3>
-                            <p className="text-sm text-muted-foreground mb-2">Image quality and display clarity</p>
+                            <h3 className="text-sm font-medium text-foreground">Resolution</h3>
+                            <p className="text-xs text-muted-foreground mb-1">Image quality and display clarity</p>
                             
-                            <div className="flex items-center justify-between mt-1">
+                            <div className="flex items-center justify-between">
                               <div>
                                 {hasResolution ? (
-                                  <div className="font-medium text-base">
+                                  <div className="font-medium text-sm">
                                     {resolutionText}
                                   </div>
                                 ) : (
-                                  <div className="text-muted-foreground">No resolution data</div>
+                                  <div className="text-xs text-muted-foreground">No resolution data</div>
                                 )}
                               </div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1.5">
                                 {getStatusBadge(goodResolution)}
-                                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
                               </div>
                             </div>
                             
                             {hasResolution && (
-                              <div className="mt-2 text-xs text-muted-foreground">
+                              <div className="mt-1.5 text-[10px] text-muted-foreground">
                                 {goodResolution ? 
-                                  "Meets minimum recommended resolution (800×600)" : 
-                                  "Below recommended resolution for clear display"}
+                                  "Meets minimum recommended resolution" : 
+                                  "Below recommended resolution"}
                               </div>
                             )}
                           </div>
@@ -541,39 +541,39 @@ export default function AnalysisPage() {
                       </CardContent>
                     </Card>
                     
-                    {/* Authors */}
+                    {/* Authors - more compact */}
                     <Card 
                       className={`transition-all hover:shadow-md cursor-pointer border-l-4 ${hasAuthors ? 'border-l-secondary' : 'border-l-destructive'}`}
                       onClick={() => navigateToDetailPage("authors")}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <Users className="h-5 w-5 text-primary" />
+                      <CardContent className="p-3">
+                        <div className="flex items-start gap-2">
+                          <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Users className="h-4 w-4 text-primary" />
                           </div>
                           <div className="flex-grow">
-                            <h3 className="font-medium text-foreground">Authors</h3>
-                            <p className="text-sm text-muted-foreground mb-2">Author information and contacts</p>
+                            <h3 className="text-sm font-medium text-foreground">Authors</h3>
+                            <p className="text-xs text-muted-foreground mb-1">Author information and contacts</p>
                             
-                            <div className="flex items-center justify-between mt-1">
+                            <div className="flex items-center justify-between">
                               <div>
                                 {hasAuthors ? (
-                                  <div className="font-medium text-base">
+                                  <div className="font-medium text-sm">
                                     {authorCount} {authorCount === 1 ? 'author' : 'authors'} found
                                   </div>
                                 ) : (
-                                  <div className="text-muted-foreground">No authors found</div>
+                                  <div className="text-xs text-muted-foreground">No authors found</div>
                                 )}
                               </div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1.5">
                                 {getStatusBadge(hasAuthors)}
-                                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
                               </div>
                             </div>
                             
                             {hasAuthors && (
-                              <div className="mt-2 text-xs text-muted-foreground">
-                                Author information improves accessibility and attribution
+                              <div className="mt-1.5 text-[10px] text-muted-foreground">
+                                Improves accessibility and attribution
                               </div>
                             )}
                           </div>
@@ -581,45 +581,45 @@ export default function AnalysisPage() {
                       </CardContent>
                     </Card>
                     
-                    {/* Font Sizes */}
+                    {/* Font Sizes - more compact */}
                     <Card 
                       className={`transition-all hover:shadow-md cursor-pointer border-l-4 ${fontsAreGood ? 'border-l-secondary' : 'border-l-destructive'}`}
                       onClick={() => navigateToDetailPage("fonts")}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <Type className="h-5 w-5 text-primary" />
+                      <CardContent className="p-3">
+                        <div className="flex items-start gap-2">
+                          <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Type className="h-4 w-4 text-primary" />
                           </div>
                           <div className="flex-grow">
-                            <h3 className="font-medium text-foreground">Font Analysis</h3>
-                            <p className="text-sm text-muted-foreground mb-2">Text size and readability</p>
+                            <h3 className="text-sm font-medium text-foreground">Font Analysis</h3>
+                            <p className="text-xs text-muted-foreground mb-1">Text size and readability</p>
                             
-                            <div className="flex items-center justify-between mt-1">
+                            <div className="flex items-center justify-between">
                               <div>
                                 {fontSizesExist ? (
-                                  <div className="font-medium text-base">
+                                  <div className="font-medium text-sm">
                                     {accessibleFontsCount}/{totalFonts} accessible sizes
                                   </div>
                                 ) : (
-                                  <div className="text-muted-foreground">No font data</div>
+                                  <div className="text-xs text-muted-foreground">No font data</div>
                                 )}
                               </div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1.5">
                                 {getStatusBadge(fontsAreGood)}
-                                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
                               </div>
                             </div>
                             
                             {fontSizesExist && (
-                              <div className="mt-2">
-                                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                              <div className="mt-1.5">
+                                <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                                   <div 
                                     className={`h-full ${fontsAreGood ? 'bg-secondary' : 'bg-destructive'}`}
                                     style={{ width: `${accessibleFontsPercentage}%` }}
                                   ></div>
                                 </div>
-                                <div className="text-xs text-muted-foreground mt-1">{accessibleFontsPercentage}% Meet size guidelines</div>
+                                <div className="text-[10px] text-muted-foreground mt-0.5">{accessibleFontsPercentage}% Meet size guidelines</div>
                               </div>
                             )}
                           </div>
@@ -627,45 +627,45 @@ export default function AnalysisPage() {
                       </CardContent>
                     </Card>
                     
-                    {/* Tables */}
+                    {/* Tables - more compact */}
                     <Card 
                       className={`transition-all hover:shadow-md cursor-pointer border-l-4 ${tablesAreGood ? 'border-l-secondary' : 'border-l-destructive'}`}
                       onClick={() => navigateToDetailPage("tables")}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <Table2 className="h-5 w-5 text-primary" />
+                      <CardContent className="p-3">
+                        <div className="flex items-start gap-2">
+                          <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Table2 className="h-4 w-4 text-primary" />
                           </div>
                           <div className="flex-grow">
-                            <h3 className="font-medium text-foreground">Tables</h3>
-                            <p className="text-sm text-muted-foreground mb-2">Tabular data accessibility</p>
+                            <h3 className="text-sm font-medium text-foreground">Tables</h3>
+                            <p className="text-xs text-muted-foreground mb-1">Tabular data accessibility</p>
                             
-                            <div className="flex items-center justify-between mt-1">
+                            <div className="flex items-center justify-between">
                               <div>
                                 {tablesExist ? (
-                                  <div className="font-medium text-base">
+                                  <div className="font-medium text-sm">
                                     {tablesWithCaptionsCount}/{tablesTotalCount} with captions
                                   </div>
                                 ) : (
-                                  <div className="text-muted-foreground">No tables found</div>
+                                  <div className="text-xs text-muted-foreground">No tables found</div>
                                 )}
                               </div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1.5">
                                 {getStatusBadge(tablesAreGood)}
-                                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
                               </div>
                             </div>
                             
                             {tablesExist && (
-                              <div className="mt-2">
-                                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                              <div className="mt-1.5">
+                                <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                                   <div 
                                     className={`h-full ${tablesAreGood ? 'bg-secondary' : 'bg-destructive'}`}
                                     style={{ width: `${tablesWithCaptionsPercentage}%` }}
                                   ></div>
                                 </div>
-                                <div className="text-xs text-muted-foreground mt-1">{tablesWithCaptionsPercentage}% Include proper captions</div>
+                                <div className="text-[10px] text-muted-foreground mt-0.5">{tablesWithCaptionsPercentage}% Include proper captions</div>
                               </div>
                             )}
                           </div>
@@ -674,8 +674,8 @@ export default function AnalysisPage() {
                     </Card>
                   </div>
                   
-                  <div className="mt-6 flex items-center justify-between">
-                    <div className="text-sm text-muted-foreground">
+                  <div className="mt-3 flex items-center justify-between">
+                    <div className="text-xs text-muted-foreground">
                       Click any card above for detailed analysis
                     </div>
                   </div>
@@ -688,23 +688,23 @@ export default function AnalysisPage() {
       
       <Footer />
       
-      {/* Image Zoom Modal */}
+      {/* Image Zoom Modal - keep the same size for full-screen viewing */}
       {isZoomModalOpen && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="relative w-full max-w-6xl max-h-[90vh] bg-white rounded-lg overflow-hidden">
-            <div className="absolute top-4 right-4 z-10">
+            <div className="absolute top-2 right-2 z-10">
               <Button 
                 variant="outline" 
                 size="icon" 
-                className="bg-white/90 rounded-full h-10 w-10 shadow-lg hover:bg-white"
+                className="bg-white/90 rounded-full h-8 w-8 shadow-lg hover:bg-white"
                 onClick={() => setIsZoomModalOpen(false)}
                 aria-label="Close full screen view"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </Button>
             </div>
             
-            <div className="h-[calc(90vh-8rem)] overflow-auto p-6 flex items-center justify-center">
+            <div className="h-[calc(90vh-8rem)] overflow-auto p-4 flex items-center justify-center">
               {analysisData?.poster_layout && (
                 <img 
                   src={analysisData.poster_layout} 
@@ -714,9 +714,9 @@ export default function AnalysisPage() {
               )}
             </div>
             
-            <div className="bg-white p-4 border-t border-border">
-              <div className="text-sm text-muted-foreground">
-                <p>This zoomed view allows you to examine poster components in detail. Use pinch-to-zoom on mobile or scroll to zoom on desktop.</p>
+            <div className="bg-white p-3 border-t border-border">
+              <div className="text-xs text-muted-foreground">
+                <p>This zoomed view allows you to examine poster components in detail.</p>
               </div>
             </div>
           </div>

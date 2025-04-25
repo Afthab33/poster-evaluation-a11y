@@ -44,12 +44,12 @@ export function Navbar() {
               className="h-8 w-8"
             />
             <span className="text-primary">Poster A11y</span>
-            {mounted && theme === "dark" && (
+            {/* {mounted && theme === "dark" && (
               <Badge variant="secondary" className="hidden sm:inline-flex">Dark Mode</Badge>
             )}
             {mounted && theme === "light" && (
               <Badge variant="outline" className="hidden sm:inline-flex">Light Mode</Badge>
-            )}
+            )} */}
           </a>
 
           <NavigationMenu className="ml-6 hidden md:block">
