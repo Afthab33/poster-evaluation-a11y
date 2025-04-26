@@ -50,7 +50,7 @@ def get_model_paths():
                 repo_id=config['repo_id'],
                 filename=config['filename'],
                 local_dir=models_dir,
-                force_download=True,  # Force download to ensure we get the latest version
+                force_download=False,  # Force download to ensure we get the latest version
                 token=os.environ.get("HF_TOKEN")  # Add token if you have one
             )
             
