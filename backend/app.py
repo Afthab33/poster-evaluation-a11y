@@ -10,7 +10,6 @@ from utils.caption_extractor import get_image_captions
 from utils.font_size import check_text_font_sizes
 from werkzeug.middleware.proxy_fix import ProxyFix
 import gc
-from utils.model_loader import get_model_paths
 
 app = Flask(__name__)
 # Add ProxyFix middleware to handle forwarded headers
@@ -296,16 +295,23 @@ def debug_request():
         return jsonify(data)
 
 def ensure_models_downloaded():
-    try:
-        get_model_paths()  # This will download/check all models at startup
-        print("All models are present.")
-    except Exception as e:
-        print(f"Model download/check failed: {e}")
+    """Download models from GCS at startup"""
+    from utils.model_loader import get_model_paths
+    
+    model_paths = get_model_paths()
+    missing_models = [name for name, path in model_paths.items() if path is None]
+    
+    if missing_models:
+        print(f"WARNING: Failed to download the following models: {missing_models}")
+        print("The application may not function correctly!")
+    else:
+        print("All models successfully downloaded/located")
 
+# Make sure this is called at startup
 if __name__ == "__main__":
     # Ensure directories exist at startup
     ensure_directories_exist()
-    ensure_models_downloaded()  # <--- Add this line
+    ensure_models_downloaded()  # Add this line
     # Use environment variables for port configuration
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", debug=False, port=port)

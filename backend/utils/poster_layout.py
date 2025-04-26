@@ -68,18 +68,16 @@ class PosterComponentExtractor:
 
         # Get model paths from model_loader
         model_paths = get_model_paths()
-        
-        # Load models using the paths from model_loader
-        try:
-            # Use the downloaded model paths
-            self.base_model = YOLOv10(model_paths["base.pt"])
-            self.figure_model = YOLO(model_paths["figure_classifier.pt"])
-            self.logo_model = YOLO(model_paths["logo_classifier.pt"])
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            print(f"Error loading models: {str(e)}")
-            raise RuntimeError(f"Failed to load required models: {str(e)}")
+
+        # Verify all required models are available
+        missing_models = [name for name, path in model_paths.items() if path is None]
+        if missing_models:
+            raise RuntimeError(f"The following required models are missing: {', '.join(missing_models)}")
+
+        # Now load the models
+        self.base_model = YOLOv10(model_paths["base.pt"])
+        self.figure_model = YOLO(model_paths["figure_classifier.pt"])
+        self.logo_model = YOLO(model_paths["logo_classifier.pt"])
 
         self.components = ['title', 'plain text', 'abandon', 'figure', 'figure_caption', 
                         'table', 'table_caption', 'table_footnote', 'isolate_formula', 'formula_caption']

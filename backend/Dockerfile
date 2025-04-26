@@ -15,18 +15,20 @@ RUN apt-get update && apt-get install -y \
     && pip install ultralytics \
     && pip install doclayout-yolo==0.0.3 \
     && pip install werkzeug==2.2.3 flask==2.0.1 flask-cors==3.0.10 gunicorn \
+    && pip install google-cloud-storage \
     && python -m spacy download en_core_web_sm \
     && rm -rf /var/lib/apt/lists/*
-
-# Copy the rest of the application
-COPY . /app
 
 # Create required directories
 RUN mkdir -p utils/Input utils/Memory/Raw\ Components utils/Output utils/Output/Logos \
     utils/Output/Color_Contrast utils/Buffer utils/Buffer/components utils/Models
 
+# Copy the rest of the application
+COPY . /app
+
 # Set environment variables
 ENV PORT=5000
+ENV GCS_BUCKET_NAME=poster-evaluation-models
 
 # Run with Gunicorn instead of Flask development server
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "120", "app:app"]

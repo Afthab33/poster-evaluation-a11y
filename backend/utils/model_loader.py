@@ -1,81 +1,79 @@
 import os
-from huggingface_hub import hf_hub_download, list_repo_files
-import platform
-import sys
+import logging
+from google.cloud import storage
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def get_model_paths():
-    """Get all model paths, downloading from Hugging Face if needed"""
+    """Get all model paths, downloading from Google Cloud Storage if needed"""
     models_dir = os.path.join(os.path.dirname(__file__), "Models")
     os.makedirs(models_dir, exist_ok=True)
     
-    # Your Hugging Face username - make sure this matches exactly with case-sensitivity
-    hf_username = os.environ.get("HF_USERNAME", "Aftab33")
+    # GCS bucket name
+    bucket_name = os.environ.get("GCS_BUCKET_NAME", "poster-evaluation-models")
     
-    # Model configurations
-    models = {
-        "base.pt": {
-            "repo_id": f"{hf_username}/poster-base-model",
-            "filename": "base.pt"
-        },
-        "figure_classifier.pt": {
-            "repo_id": f"{hf_username}/poster-figure-classifier",
-            "filename": "figure_classifier.pt"
-        },
-        "logo_classifier.pt": {
-            "repo_id": f"{hf_username}/poster-logo-classifier",
-            "filename": "logo_classifier.pt"
-        }
+    # Model file configurations
+    model_files = {
+        "base.pt": "models/base.pt",  # Path in GCS bucket
+        "figure_classifier.pt": "models/figure_classifier.pt",
+        "logo_classifier.pt": "models/logo_classifier.pt"
     }
+    
+    # Initialize GCS client
+    try:
+        client = storage.Client()
+        bucket = client.bucket(bucket_name)
+    except Exception as e:
+        logger.error(f"Error initializing GCS client: {str(e)}")
+        # Fallback to local files if they exist
+        logger.warning("Falling back to local model files if they exist")
+        return {name: os.path.join(models_dir, name) if os.path.exists(os.path.join(models_dir, name)) else None 
+                for name in model_files.keys()}
     
     model_paths = {}
     
-    for model_name, config in models.items():
-        filepath = os.path.join(models_dir, model_name)
+    # Download each model
+    for model_name, gcs_path in model_files.items():
+        local_path = os.path.join(models_dir, model_name)
         
+        # Check if model exists locally first
+        if os.path.exists(local_path) and os.path.getsize(local_path) > 0:
+            logger.info(f"Using cached model {model_name} from {local_path}")
+            model_paths[model_name] = local_path
+            continue
+        
+        # If not, download from GCS
+        logger.info(f"Downloading {model_name} from GCS bucket {bucket_name}, path {gcs_path}")
         try:
-            print(f"Attempting to download {model_name} from {config['repo_id']}...")
+            blob = bucket.blob(gcs_path)
+            blob.download_to_filename(local_path)
             
-            # Try to list files in the repository to verify it exists
-            try:
-                repo_files = list_repo_files(config['repo_id'])
-                print(f"Repository files: {repo_files}")
-                
-                if config['filename'] not in repo_files:
-                    print(f"Warning: {config['filename']} not found in repository. Available files: {repo_files}")
-            except Exception as e:
-                print(f"Error listing repository contents: {str(e)}")
-            
-            # Download the file from Hugging Face
-            filepath = hf_hub_download(
-                repo_id=config['repo_id'],
-                filename=config['filename'],
-                local_dir=models_dir,
-                force_download=False,  # Force download to ensure we get the latest version
-                token=os.environ.get("HF_TOKEN")  # Add token if you have one
-            )
-            
-            print(f"Successfully downloaded {model_name} to {filepath}")
-            
-            # Use platform-specific path formatting
-            if platform.system() == 'Windows':
-                model_paths[model_name] = filepath.replace('/', '\\')
+            # Verify download was successful
+            if os.path.exists(local_path) and os.path.getsize(local_path) > 0:
+                logger.info(f"Successfully downloaded {model_name} to {local_path}")
+                model_paths[model_name] = local_path
             else:
-                model_paths[model_name] = filepath
-                
+                logger.error(f"Downloaded file {local_path} is empty or missing")
+                model_paths[model_name] = None
         except Exception as e:
-            print(f"Failed to download {model_name}: {str(e)}")
+            logger.error(f"Error downloading {model_name}: {str(e)}")
             model_paths[model_name] = None
-            
+    
+    # Check if any models are missing
+    missing_models = [name for name, path in model_paths.items() if path is None]
+    if missing_models:
+        logger.error(f"The following models are missing: {missing_models}")
+    
     return model_paths
 
-# Auto-download models when module is imported
-if __name__ != "__main__":
-    # Always initialize models when imported
-    print("Initializing models...")
-    model_paths = get_model_paths()
-else:
-    # Test when run directly
+# For direct testing
+if __name__ == "__main__":
     model_paths = get_model_paths()
     for name, path in model_paths.items():
         status = "✅ Available" if path and os.path.exists(path) else "❌ Missing"
         print(f"{name}: {status}")
+else:
+    # Auto-initialize when imported
+    logger.info("Initializing models...")
+    model_paths = get_model_paths()
