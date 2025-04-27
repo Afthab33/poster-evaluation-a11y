@@ -13,11 +13,11 @@ def get_model_paths():
     # GCS bucket name
     bucket_name = os.environ.get("GCS_BUCKET_NAME", "poster-evaluation-models")
     
-    # Model file configurations
+    # Model file configurations - files are at root level, not in models/ subfolder
     model_files = {
-        "base.pt": "models/base.pt",  # Path in GCS bucket
-        "figure_classifier.pt": "models/figure_classifier.pt",
-        "logo_classifier.pt": "models/logo_classifier.pt"
+        "base.pt": "base.pt",  # Root-level path in GCS bucket
+        "figure_classifier.pt": "figure_classifier.pt",
+        "logo_classifier.pt": "logo_classifier.pt"
     }
     
     # Initialize GCS client
@@ -76,4 +76,4 @@ if __name__ == "__main__":
 else:
     # Auto-initialize when imported
     logger.info("Initializing models...")
-    model_paths = get_model_paths()
+    # Don't auto-download on import to avoid slowing down startup
