@@ -178,11 +178,11 @@ export function Footer() {
             </p>
             
             <motion.a 
-              href="mailto:contact@postera11y.org"
+              href="wajdi.j1@gmail.com"
               className="text-primary hover:text-primary/80 text-sm font-medium transition-colors flex items-center group"
               whileHover={{ scale: 1.02, x: 3 }}
             >
-              wajdij1@gmail.com
+              wajdi.j1@gmail.com
               <motion.div
                 initial={{ opacity: 0, x: -5 }}
                 whileHover={{ opacity: 1, x: 0 }}
