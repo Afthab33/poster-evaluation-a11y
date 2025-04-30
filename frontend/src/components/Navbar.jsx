@@ -43,7 +43,7 @@ export function Navbar() {
               alt="Poster A11y Logo" 
               className="h-8 w-8"
             />
-            <span className="text-primary">Poster A11y</span>
+            <span className="text-primary">PosterA11y</span>
             {/* {mounted && theme === "dark" && (
               <Badge variant="secondary" className="hidden sm:inline-flex">Dark Mode</Badge>
             )}
