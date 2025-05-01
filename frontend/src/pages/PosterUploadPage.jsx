@@ -28,13 +28,12 @@ import { toast } from "sonner";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
+import pdfjsWorker from "pdfjs-dist/legacy/build/pdf.worker?worker";
+import workerUrl from "pdfjs-dist/legacy/build/pdf.worker.mjs?url";
 
-// Add PDF.js library to convert PDFs to images
-import * as pdfjs from 'pdfjs-dist';
-import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
-
-// Set up PDF.js worker (add this near the top of your file)
-GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Set the workerSrc to the imported worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 
 export default function PosterUploadPage() {
   const { theme } = useTheme();
@@ -163,13 +162,25 @@ export default function PosterUploadPage() {
         dimensions: dimensions
       });
     } else if (file.type === 'application/pdf') {
-      // For PDF files, use a placeholder image
-      setFilePreview('/pdf-placeholder.png'); // Make sure this exists in your public folder
-      setFileInfo({
-        size: (file.size / (1024 * 1024)).toFixed(2),
-        type: 'PDF',
-        dimensions: 'Multi-page document'
-      });
+      // For PDF files, render the first page as an image for preview
+      try {
+        const pngFile = await convertPdfToImage(file);
+        const previewUrl = URL.createObjectURL(pngFile);
+        setFilePreview(previewUrl);
+        setFileInfo({
+          size: (file.size / (1024 * 1024)).toFixed(2),
+          type: 'PDF',
+          dimensions: 'Multi-page document'
+        });
+      } catch (err) {
+        setFilePreview('/pdf-placeholder.png'); // fallback
+        setFileInfo({
+          size: (file.size / (1024 * 1024)).toFixed(2),
+          type: 'PDF',
+          dimensions: 'Multi-page document'
+        });
+        setError("Could not generate PDF preview.");
+      }
     }
     
     // Auto-switch to preview tab when file is selected
@@ -191,43 +202,35 @@ export default function PosterUploadPage() {
     }
   };
   
-  // Add this function to convert PDF to PNG
-  const convertPdfToImage = async (pdfFile) => {
-    // Load the PDF file
+
+
+  // Utility: Convert PDF file to PNG Blob (first page only)
+  async function convertPdfToImage(pdfFile) {
     const arrayBuffer = await pdfFile.arrayBuffer();
-    const pdf = await getDocument({ data: arrayBuffer }).promise;
-    
-    // Get the first page (for posters, usually just one page)
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     const page = await pdf.getPage(1);
-    
-    // Set scale for better resolution (adjust as needed)
-    const viewport = page.getViewport({ scale: 2.0 });
-    
-    // Create a canvas to render the PDF page
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-    
-    // Render the PDF page to the canvas
-    await page.render({
-      canvasContext: context,
-      viewport: viewport
-    }).promise;
-    
-    // Convert canvas to PNG data
+
+    // Set desired output size (e.g., 1500px wide)
+    const viewport = page.getViewport({ scale: 1 });
+    const scale = 1500 / viewport.width;
+    const scaledViewport = page.getViewport({ scale });
+
+    // Render PDF page to canvas
+    const canvas = document.createElement("canvas");
+    canvas.width = scaledViewport.width;
+    canvas.height = scaledViewport.height;
+    const context = canvas.getContext("2d");
+    await page.render({ canvasContext: context, viewport: scaledViewport }).promise;
+
+    // Convert canvas to PNG Blob
     return new Promise((resolve) => {
       canvas.toBlob((blob) => {
-        // Create a new File object from the blob
-        const imageFile = new File(
-          [blob], 
-          pdfFile.name.replace('.pdf', '.png'), 
-          { type: 'image/png' }
-        );
-        resolve(imageFile);
-      }, 'image/png');
+        // Name the file as .png
+        const pngFile = new File([blob], pdfFile.name.replace(/\.pdf$/i, ".png"), { type: "image/png" });
+        resolve(pngFile);
+      }, "image/png");
     });
-  };
+  }
 
   // Handle upload button click with API integration
   const handleUpload = async () => {
@@ -267,7 +270,7 @@ export default function PosterUploadPage() {
       
       // Create FormData for API request
       const formData = new FormData();
-      formData.append('poster', fileToUpload);
+      formData.append('poster', fileToUpload); // Use fileToUpload (PNG/JPG)
       
       // Set up XMLHttpRequest for the request
       const xhr = new XMLHttpRequest();
