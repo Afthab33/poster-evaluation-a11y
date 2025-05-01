@@ -16,7 +16,7 @@ app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Update CORS configuration to explicitly allow your frontend origin
-CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "https://poster-a11y.vercel.app"]}})
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "https://poster-a11y.vercel.app", "https://postera11y.vercel.app"]}})
 
 # Add this before your routes
 @app.before_request

@@ -29,6 +29,13 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Add PDF.js library to convert PDFs to images
+import * as pdfjs from 'pdfjs-dist';
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
+
+// Set up PDF.js worker (add this near the top of your file)
+GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+
 export default function PosterUploadPage() {
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -184,6 +191,44 @@ export default function PosterUploadPage() {
     }
   };
   
+  // Add this function to convert PDF to PNG
+  const convertPdfToImage = async (pdfFile) => {
+    // Load the PDF file
+    const arrayBuffer = await pdfFile.arrayBuffer();
+    const pdf = await getDocument({ data: arrayBuffer }).promise;
+    
+    // Get the first page (for posters, usually just one page)
+    const page = await pdf.getPage(1);
+    
+    // Set scale for better resolution (adjust as needed)
+    const viewport = page.getViewport({ scale: 2.0 });
+    
+    // Create a canvas to render the PDF page
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+    
+    // Render the PDF page to the canvas
+    await page.render({
+      canvasContext: context,
+      viewport: viewport
+    }).promise;
+    
+    // Convert canvas to PNG data
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        // Create a new File object from the blob
+        const imageFile = new File(
+          [blob], 
+          pdfFile.name.replace('.pdf', '.png'), 
+          { type: 'image/png' }
+        );
+        resolve(imageFile);
+      }, 'image/png');
+    });
+  };
+
   // Handle upload button click with API integration
   const handleUpload = async () => {
     if (!file) return;
@@ -198,9 +243,31 @@ export default function PosterUploadPage() {
     setFactIntervalId(intervalId);
     
     try {
+      // Check if file is PDF and convert if needed
+      let fileToUpload = file;
+      
+      if (file.type === 'application/pdf') {
+        try {
+          // Update UI to show conversion is happening
+          if (ariaLiveRef.current) {
+            ariaLiveRef.current.textContent = "Converting PDF to image format...";
+          }
+          
+          // Convert PDF to PNG
+          fileToUpload = await convertPdfToImage(file);
+          
+          // Announce conversion completed
+          if (ariaLiveRef.current) {
+            ariaLiveRef.current.textContent = "PDF converted successfully. Uploading for analysis...";
+          }
+        } catch (conversionError) {
+          throw new Error(`PDF conversion failed: ${conversionError.message}`);
+        }
+      }
+      
       // Create FormData for API request
       const formData = new FormData();
-      formData.append('poster', file);
+      formData.append('poster', fileToUpload);
       
       // Set up XMLHttpRequest for the request
       const xhr = new XMLHttpRequest();
